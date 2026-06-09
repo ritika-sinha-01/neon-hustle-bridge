@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as StudentRouteImport } from './routes/student'
+import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as RoleRouteImport } from './routes/role'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as OpportunitiesRouteImport } from './routes/opportunities'
@@ -23,6 +24,11 @@ import { Route as OpportunitiesIdRouteImport } from './routes/opportunities.$id'
 const StudentRoute = StudentRouteImport.update({
   id: '/student',
   path: '/student',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SettingsRoute = SettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RoleRoute = RoleRouteImport.update({
@@ -80,6 +86,7 @@ export interface FileRoutesByFullPath {
   '/opportunities': typeof OpportunitiesRouteWithChildren
   '/profile': typeof ProfileRoute
   '/role': typeof RoleRoute
+  '/settings': typeof SettingsRoute
   '/student': typeof StudentRoute
   '/opportunities/$id': typeof OpportunitiesIdRoute
 }
@@ -92,6 +99,7 @@ export interface FileRoutesByTo {
   '/opportunities': typeof OpportunitiesRouteWithChildren
   '/profile': typeof ProfileRoute
   '/role': typeof RoleRoute
+  '/settings': typeof SettingsRoute
   '/student': typeof StudentRoute
   '/opportunities/$id': typeof OpportunitiesIdRoute
 }
@@ -105,6 +113,7 @@ export interface FileRoutesById {
   '/opportunities': typeof OpportunitiesRouteWithChildren
   '/profile': typeof ProfileRoute
   '/role': typeof RoleRoute
+  '/settings': typeof SettingsRoute
   '/student': typeof StudentRoute
   '/opportunities/$id': typeof OpportunitiesIdRoute
 }
@@ -119,6 +128,7 @@ export interface FileRouteTypes {
     | '/opportunities'
     | '/profile'
     | '/role'
+    | '/settings'
     | '/student'
     | '/opportunities/$id'
   fileRoutesByTo: FileRoutesByTo
@@ -131,6 +141,7 @@ export interface FileRouteTypes {
     | '/opportunities'
     | '/profile'
     | '/role'
+    | '/settings'
     | '/student'
     | '/opportunities/$id'
   id:
@@ -143,6 +154,7 @@ export interface FileRouteTypes {
     | '/opportunities'
     | '/profile'
     | '/role'
+    | '/settings'
     | '/student'
     | '/opportunities/$id'
   fileRoutesById: FileRoutesById
@@ -156,6 +168,7 @@ export interface RootRouteChildren {
   OpportunitiesRoute: typeof OpportunitiesRouteWithChildren
   ProfileRoute: typeof ProfileRoute
   RoleRoute: typeof RoleRoute
+  SettingsRoute: typeof SettingsRoute
   StudentRoute: typeof StudentRoute
 }
 
@@ -166,6 +179,13 @@ declare module '@tanstack/react-router' {
       path: '/student'
       fullPath: '/student'
       preLoaderRoute: typeof StudentRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/role': {
@@ -255,6 +275,7 @@ const rootRouteChildren: RootRouteChildren = {
   OpportunitiesRoute: OpportunitiesRouteWithChildren,
   ProfileRoute: ProfileRoute,
   RoleRoute: RoleRoute,
+  SettingsRoute: SettingsRoute,
   StudentRoute: StudentRoute,
 }
 export const routeTree = rootRouteImport
