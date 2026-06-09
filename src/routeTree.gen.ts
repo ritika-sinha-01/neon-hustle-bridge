@@ -14,6 +14,7 @@ import { Route as RoleRouteImport } from './routes/role'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as OpportunitiesRouteImport } from './routes/opportunities'
 import { Route as ClientRouteImport } from './routes/client'
+import { Route as AiOutreachRouteImport } from './routes/ai-outreach'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as OpportunitiesIdRouteImport } from './routes/opportunities.$id'
 
@@ -42,6 +43,11 @@ const ClientRoute = ClientRouteImport.update({
   path: '/client',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AiOutreachRoute = AiOutreachRouteImport.update({
+  id: '/ai-outreach',
+  path: '/ai-outreach',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -55,6 +61,7 @@ const OpportunitiesIdRoute = OpportunitiesIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/ai-outreach': typeof AiOutreachRoute
   '/client': typeof ClientRoute
   '/opportunities': typeof OpportunitiesRouteWithChildren
   '/profile': typeof ProfileRoute
@@ -64,6 +71,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/ai-outreach': typeof AiOutreachRoute
   '/client': typeof ClientRoute
   '/opportunities': typeof OpportunitiesRouteWithChildren
   '/profile': typeof ProfileRoute
@@ -74,6 +82,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/ai-outreach': typeof AiOutreachRoute
   '/client': typeof ClientRoute
   '/opportunities': typeof OpportunitiesRouteWithChildren
   '/profile': typeof ProfileRoute
@@ -85,6 +94,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/ai-outreach'
     | '/client'
     | '/opportunities'
     | '/profile'
@@ -94,6 +104,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/ai-outreach'
     | '/client'
     | '/opportunities'
     | '/profile'
@@ -103,6 +114,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/ai-outreach'
     | '/client'
     | '/opportunities'
     | '/profile'
@@ -113,6 +125,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AiOutreachRoute: typeof AiOutreachRoute
   ClientRoute: typeof ClientRoute
   OpportunitiesRoute: typeof OpportunitiesRouteWithChildren
   ProfileRoute: typeof ProfileRoute
@@ -157,6 +170,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ClientRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/ai-outreach': {
+      id: '/ai-outreach'
+      path: '/ai-outreach'
+      fullPath: '/ai-outreach'
+      preLoaderRoute: typeof AiOutreachRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -188,6 +208,7 @@ const OpportunitiesRouteWithChildren = OpportunitiesRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AiOutreachRoute: AiOutreachRoute,
   ClientRoute: ClientRoute,
   OpportunitiesRoute: OpportunitiesRouteWithChildren,
   ProfileRoute: ProfileRoute,
