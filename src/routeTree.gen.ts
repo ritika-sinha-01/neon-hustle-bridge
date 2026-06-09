@@ -13,6 +13,7 @@ import { Route as StudentRouteImport } from './routes/student'
 import { Route as RoleRouteImport } from './routes/role'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as OpportunitiesRouteImport } from './routes/opportunities'
+import { Route as NotificationsRouteImport } from './routes/notifications'
 import { Route as MessagesRouteImport } from './routes/messages'
 import { Route as ClientRouteImport } from './routes/client'
 import { Route as AiOutreachRouteImport } from './routes/ai-outreach'
@@ -37,6 +38,11 @@ const ProfileRoute = ProfileRouteImport.update({
 const OpportunitiesRoute = OpportunitiesRouteImport.update({
   id: '/opportunities',
   path: '/opportunities',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NotificationsRoute = NotificationsRouteImport.update({
+  id: '/notifications',
+  path: '/notifications',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MessagesRoute = MessagesRouteImport.update({
@@ -70,6 +76,7 @@ export interface FileRoutesByFullPath {
   '/ai-outreach': typeof AiOutreachRoute
   '/client': typeof ClientRoute
   '/messages': typeof MessagesRoute
+  '/notifications': typeof NotificationsRoute
   '/opportunities': typeof OpportunitiesRouteWithChildren
   '/profile': typeof ProfileRoute
   '/role': typeof RoleRoute
@@ -81,6 +88,7 @@ export interface FileRoutesByTo {
   '/ai-outreach': typeof AiOutreachRoute
   '/client': typeof ClientRoute
   '/messages': typeof MessagesRoute
+  '/notifications': typeof NotificationsRoute
   '/opportunities': typeof OpportunitiesRouteWithChildren
   '/profile': typeof ProfileRoute
   '/role': typeof RoleRoute
@@ -93,6 +101,7 @@ export interface FileRoutesById {
   '/ai-outreach': typeof AiOutreachRoute
   '/client': typeof ClientRoute
   '/messages': typeof MessagesRoute
+  '/notifications': typeof NotificationsRoute
   '/opportunities': typeof OpportunitiesRouteWithChildren
   '/profile': typeof ProfileRoute
   '/role': typeof RoleRoute
@@ -106,6 +115,7 @@ export interface FileRouteTypes {
     | '/ai-outreach'
     | '/client'
     | '/messages'
+    | '/notifications'
     | '/opportunities'
     | '/profile'
     | '/role'
@@ -117,6 +127,7 @@ export interface FileRouteTypes {
     | '/ai-outreach'
     | '/client'
     | '/messages'
+    | '/notifications'
     | '/opportunities'
     | '/profile'
     | '/role'
@@ -128,6 +139,7 @@ export interface FileRouteTypes {
     | '/ai-outreach'
     | '/client'
     | '/messages'
+    | '/notifications'
     | '/opportunities'
     | '/profile'
     | '/role'
@@ -140,6 +152,7 @@ export interface RootRouteChildren {
   AiOutreachRoute: typeof AiOutreachRoute
   ClientRoute: typeof ClientRoute
   MessagesRoute: typeof MessagesRoute
+  NotificationsRoute: typeof NotificationsRoute
   OpportunitiesRoute: typeof OpportunitiesRouteWithChildren
   ProfileRoute: typeof ProfileRoute
   RoleRoute: typeof RoleRoute
@@ -174,6 +187,13 @@ declare module '@tanstack/react-router' {
       path: '/opportunities'
       fullPath: '/opportunities'
       preLoaderRoute: typeof OpportunitiesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/notifications': {
+      id: '/notifications'
+      path: '/notifications'
+      fullPath: '/notifications'
+      preLoaderRoute: typeof NotificationsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/messages': {
@@ -231,6 +251,7 @@ const rootRouteChildren: RootRouteChildren = {
   AiOutreachRoute: AiOutreachRoute,
   ClientRoute: ClientRoute,
   MessagesRoute: MessagesRoute,
+  NotificationsRoute: NotificationsRoute,
   OpportunitiesRoute: OpportunitiesRouteWithChildren,
   ProfileRoute: ProfileRoute,
   RoleRoute: RoleRoute,
