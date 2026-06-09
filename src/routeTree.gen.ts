@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as StudentRouteImport } from './routes/student'
 import { Route as RoleRouteImport } from './routes/role'
+import { Route as OpportunitiesRouteImport } from './routes/opportunities'
 import { Route as ClientRouteImport } from './routes/client'
 import { Route as IndexRouteImport } from './routes/index'
 
@@ -22,6 +23,11 @@ const StudentRoute = StudentRouteImport.update({
 const RoleRoute = RoleRouteImport.update({
   id: '/role',
   path: '/role',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OpportunitiesRoute = OpportunitiesRouteImport.update({
+  id: '/opportunities',
+  path: '/opportunities',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ClientRoute = ClientRouteImport.update({
@@ -38,12 +44,14 @@ const IndexRoute = IndexRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/client': typeof ClientRoute
+  '/opportunities': typeof OpportunitiesRoute
   '/role': typeof RoleRoute
   '/student': typeof StudentRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/client': typeof ClientRoute
+  '/opportunities': typeof OpportunitiesRoute
   '/role': typeof RoleRoute
   '/student': typeof StudentRoute
 }
@@ -51,20 +59,22 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/client': typeof ClientRoute
+  '/opportunities': typeof OpportunitiesRoute
   '/role': typeof RoleRoute
   '/student': typeof StudentRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/client' | '/role' | '/student'
+  fullPaths: '/' | '/client' | '/opportunities' | '/role' | '/student'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/client' | '/role' | '/student'
-  id: '__root__' | '/' | '/client' | '/role' | '/student'
+  to: '/' | '/client' | '/opportunities' | '/role' | '/student'
+  id: '__root__' | '/' | '/client' | '/opportunities' | '/role' | '/student'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ClientRoute: typeof ClientRoute
+  OpportunitiesRoute: typeof OpportunitiesRoute
   RoleRoute: typeof RoleRoute
   StudentRoute: typeof StudentRoute
 }
@@ -83,6 +93,13 @@ declare module '@tanstack/react-router' {
       path: '/role'
       fullPath: '/role'
       preLoaderRoute: typeof RoleRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/opportunities': {
+      id: '/opportunities'
+      path: '/opportunities'
+      fullPath: '/opportunities'
+      preLoaderRoute: typeof OpportunitiesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/client': {
@@ -105,9 +122,20 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ClientRoute: ClientRoute,
+  OpportunitiesRoute: OpportunitiesRoute,
   RoleRoute: RoleRoute,
   StudentRoute: StudentRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
