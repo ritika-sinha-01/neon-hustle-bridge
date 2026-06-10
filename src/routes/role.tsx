@@ -5,7 +5,7 @@ import { NeonBackground } from "@/components/site/NeonBackground";
 import { Logo } from "@/components/site/Logo";
 
 export const Route = createFileRoute("/role")({
-  head: () => ({ meta: [{ title: "Choose Your Role — HustleBridge" }, { name: "description", content: "Sign up as student or business." }] }),
+  head: () => ({ meta: [{ title: "Choose Your Role — HustleBridge" }, { name: "description", content: "Sign up as hustler or business." }] }),
   component: RolePage,
 });
 
@@ -25,8 +25,8 @@ function RolePage() {
 
         <div className="mt-16 grid w-full gap-6 md:grid-cols-2">
           {[
-            { icon: GraduationCap, role: "STUDENT", color: "#F5E400", desc: "Find freelance opportunities, build your profile, and grow your career.", to: "/student", cta: "Continue as Student" },
-            { icon: Briefcase, role: "BUSINESS", color: "#FF0A78", desc: "Post projects, hire talented students, and grow your business.", to: "/client", cta: "Continue as Business" },
+            { icon: GraduationCap, role: "HUSTLER", color: "#F5E400", desc: "Find freelance gigs, build your profile, and grow your hustle — open to students, creators, and side-hustlers.", to: "/student", cta: "Continue as Hustler" },
+            { icon: Briefcase, role: "BUSINESS", color: "#FF0A78", desc: "Post projects, hire talented hustlers, and grow your business.", to: "/client", cta: "Continue as Business" },
           ].map((r, i) => {
             const Icon = r.icon;
             return (
