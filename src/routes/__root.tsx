@@ -81,10 +81,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "description", content: "HustleBridge connects ambitious students with real-world projects. Build experience, find clients, grow your hustle." },
       { name: "author", content: "HustleBridge" },
       { property: "og:title", content: "HustleBridge — Turn Skills Into Opportunities" },
-      { property: "og:description", content: "The premium marketplace where students meet real clients." },
+      { property: "og:description", content: "HustleBridge connects ambitious students with real-world projects. Build experience, find clients, grow your hustle." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@Lovable" },
+      { name: "twitter:title", content: "HustleBridge — Turn Skills Into Opportunities" },
+      { name: "twitter:description", content: "HustleBridge connects ambitious students with real-world projects. Build experience, find clients, grow your hustle." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/994deb45-a1f6-4f2e-a7ca-dbd50390337b/id-preview-0b314bf1--cdac834c-eec4-4459-bd7d-39f3678ee2c6.lovable.app-1781114893897.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/994deb45-a1f6-4f2e-a7ca-dbd50390337b/id-preview-0b314bf1--cdac834c-eec4-4459-bd7d-39f3678ee2c6.lovable.app-1781114893897.png" },
     ],
     links: [
       {
