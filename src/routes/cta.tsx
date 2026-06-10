@@ -19,10 +19,10 @@ function CTA() {
         <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="font-display text-6xl font-bold leading-[1.05] sm:text-7xl lg:text-8xl">
           READY TO GROW <br /> YOUR <span className="text-[#FF0A78] text-glow-pink italic">HUSTLE?</span>
         </motion.h1>
-        <p className="mx-auto mt-6 max-w-2xl text-lg text-white/70">Join thousands of students and businesses building the future together. Your next big opportunity is one click away.</p>
+        <p className="mx-auto mt-6 max-w-2xl text-lg text-white/70">Join thousands of hustlers and businesses building the future together. Your next big opportunity is one click away.</p>
         <div className="mt-10 flex flex-wrap justify-center gap-4">
-          <Link to="/role" className="rounded-full bg-[#F5E400] px-8 py-4 font-semibold text-black glow-yellow hover:scale-105 transition">Join as Student</Link>
-          <Link to="/role" className="rounded-full bg-[#FF0A78] px-8 py-4 font-semibold text-white glow-pink hover:scale-105 transition">Hire Student Talent</Link>
+          <Link to="/role" className="rounded-full bg-[#F5E400] px-8 py-4 font-semibold text-black glow-yellow hover:scale-105 transition">Join as Hustler</Link>
+          <Link to="/role" className="rounded-full bg-[#FF0A78] px-8 py-4 font-semibold text-white glow-pink hover:scale-105 transition">Hire Hustler Talent</Link>
         </div>
 
         <div className="mt-20 grid gap-4 md:grid-cols-3">
