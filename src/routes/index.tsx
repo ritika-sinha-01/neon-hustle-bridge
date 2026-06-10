@@ -10,7 +10,7 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "HustleBridge — Turn Skills Into Opportunities" },
-      { name: "description", content: "Where ambitious students meet real clients. Build experience, land projects, grow your hustle." },
+      { name: "description", content: "Where ambitious hustlers meet real clients. Build experience, land projects, grow your hustle." },
     ],
   }),
   component: Index,
@@ -25,7 +25,7 @@ const skillCards = [
 ];
 
 const stats = [
-  { v: "12,400+", l: "Active Students" },
+  { v: "12,400+", l: "Active Hustlers" },
   { v: "3,200+", l: "Verified Clients" },
   { v: "₹4.2Cr", l: "Paid to Hustlers" },
   { v: "98%", l: "Satisfaction" },
@@ -57,13 +57,13 @@ function Index() {
         <div className="grid items-center gap-16 lg:grid-cols-2">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }}>
             <span className="inline-flex items-center gap-2 rounded-full glass px-4 py-1.5 text-xs font-medium text-white/80">
-              <span className="h-1.5 w-1.5 rounded-full bg-[#F5E400] animate-neon-pulse" /> The student hustle marketplace
+              <span className="h-1.5 w-1.5 rounded-full bg-[#F5E400] animate-neon-pulse" /> The hustler marketplace
             </span>
             <h1 className="mt-6 font-display text-5xl font-bold leading-[1.05] sm:text-6xl lg:text-7xl">
               Turn Skills Into <span className="text-[#F5E400] text-glow-yellow">Opportunities.</span>
             </h1>
             <p className="mt-6 max-w-xl text-lg text-white/70">
-              HustleBridge connects ambitious students with real-world projects from verified clients. Find work, build experience, grow your hustle — all in one place.
+              HustleBridge connects ambitious hustlers with real-world projects from verified clients. Find work, build experience, grow your hustle — all in one place.
             </p>
             <div className="mt-10 flex flex-wrap gap-4">
               <Link to="/role" className="group inline-flex items-center gap-2 rounded-full bg-[#F5E400] px-7 py-4 text-base font-semibold text-black transition hover:scale-105 glow-yellow">
@@ -206,7 +206,7 @@ function Index() {
           <div className="relative grid items-center gap-6 md:grid-cols-[1fr_auto]">
             <h2 className="font-display text-4xl font-bold sm:text-5xl">Ready to grow your <span className="text-[#FF0A78] text-glow-pink">hustle?</span></h2>
             <div className="flex flex-wrap gap-3">
-              <Link to="/role" className="rounded-full bg-[#F5E400] px-7 py-4 font-semibold text-black glow-yellow hover:scale-105 transition">Join as Student</Link>
+              <Link to="/role" className="rounded-full bg-[#F5E400] px-7 py-4 font-semibold text-black glow-yellow hover:scale-105 transition">Join as Hustler</Link>
               <Link to="/role" className="rounded-full bg-[#FF0A78] px-7 py-4 font-semibold text-white glow-pink hover:scale-105 transition">Hire Talent</Link>
             </div>
           </div>
