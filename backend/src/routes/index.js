@@ -7,6 +7,7 @@ import opportunityRoutes from './opportunity.routes.js';
 import applicationRoutes from './application.routes.js';
 import messageRoutes from './message.routes.js';
 import notificationRoutes from './notification.routes.js';
+import aiRoutes from './ai.routes.js';
 
 const router = Router();
 
@@ -28,5 +29,6 @@ router.use('/opportunities', opportunityRoutes);
 router.use('/applications', applicationRoutes);
 router.use('/messages', messageRoutes);
 router.use('/notifications', notificationRoutes);
+router.use('/ai', aiRoutes);
 
 export default router;

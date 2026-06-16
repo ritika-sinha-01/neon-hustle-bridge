@@ -26,6 +26,7 @@ export const env = {
     windowMs: Number(process.env.RATE_LIMIT_WINDOW_MS ?? 900_000),
     max: Number(process.env.RATE_LIMIT_MAX ?? 100),
   },
+  geminiApiKey: process.env.GEMINI_API_KEY ?? '',
 };
 
 export const isProduction = env.nodeEnv === 'production';

@@ -113,3 +113,10 @@ export const listPaginationValidation = [
   query('page').optional().isInt({ min: 1 }),
   query('limit').optional().isInt({ min: 1, max: 100 }),
 ];
+
+export const generateOutreachValidation = [
+  body('opportunityId').isUUID().withMessage('Valid opportunityId is required'),
+  body('type')
+    .isIn(['proposal', 'cold_email', 'linkedin', 'whatsapp'])
+    .withMessage('type must be proposal, cold_email, linkedin, or whatsapp'),
+];
