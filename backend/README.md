@@ -122,9 +122,9 @@ Query params for list: `page`, `limit`, `category`, `workMode`, `status`, `searc
 |--------|-------------------------------|------|-----------------------|
 | GET    | /conversations                | ✓    | List conversations    |
 | POST   | /conversations                | ✓    | Start conversation    |
-| GET    | /conversations/:id            | ✓    | Messages in thread    |
-| POST   | /conversations/:id/messages   | ✓    | Send message (REST)   |
-| PATCH  | /conversations/:id/read       | ✓    | Mark as read          |
+| GET    | /conversations/:conversationId            | ✓    | Messages in thread    |
+| POST   | /conversations/:conversationId/messages   | ✓    | Send message (REST)   |
+| PATCH  | /conversations/:conversationId/read       | ✓    | Mark as read          |
 
 ### Notifications — `/api/v1/notifications`
 
@@ -172,15 +172,31 @@ const socket = io('http://localhost:4000', {
 });
 ```
 
-Events:
+### Events
 
-| Event              | Direction   | Description                |
-|--------------------|-------------|----------------------------|
-| conversation:join  | client → srv| Join conversation room     |
-| message:send       | client → srv| Send real-time message     |
-| message:new        | srv → client| New message broadcast      |
-| notification:new   | srv → client| Push notification          |
-| typing:start/stop  | both        | Typing indicators          |
+| Event | Direction | Description |
+|-------|-----------|-------------|
+| `connection` | server | Authenticated socket connected |
+| `join_conversation` | client → server | Join a conversation room (participant only) |
+| `send_message` | client → server | Send message `{ conversationId, content }` |
+| `receive_message` | server → client | New message broadcast |
+| `typing_start` | both | `{ conversationId, userId }` |
+| `typing_stop` | both | `{ conversationId, userId }` |
+| `message_read` | both | Read receipt `{ conversationId, userId, readAt }` |
+| `user_online` | server → client | `{ userId }` — conversation partner came online |
+| `user_offline` | server → client | `{ userId }` — conversation partner went offline |
+| `notification:new` | server → client | Push when recipient is offline |
+
+Offline users receive persisted notifications via `GET /api/v1/notifications`.
+
+### REST smoke tests (PowerShell)
+
+```powershell
+cd backend
+.\scripts\test-messages.ps1
+```
+
+See `docs/CHAT_FRONTEND_INTEGRATION.md` for React + Vite wiring.
 
 ## Security
 

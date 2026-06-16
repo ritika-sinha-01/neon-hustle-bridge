@@ -9,7 +9,11 @@ export const listConversations = asyncHandler(async (req, res) => {
 
 export const getConversation = asyncHandler(async (req, res) => {
   const { page, limit, offset } = parsePagination(req.query, { page: 1, limit: 50, maxLimit: 200 });
-  const result = await messageService.getConversation(req.params.id, req.user.id, { limit, offset });
+  const result = await messageService.getConversation(
+    req.params.conversationId,
+    req.user.id,
+    { limit, offset },
+  );
   return success(res, result, 200, paginationMeta(result.total, page, limit));
 });
 
@@ -19,11 +23,20 @@ export const createConversation = asyncHandler(async (req, res) => {
 });
 
 export const sendMessage = asyncHandler(async (req, res) => {
-  const message = await messageService.sendMessage(req.params.id, req.user.id, req.body.content);
+  const message = await messageService.sendMessage(
+    req.params.conversationId,
+    req.user.id,
+    req.body.content,
+    { realtime: true },
+  );
   return created(res, message);
 });
 
 export const markRead = asyncHandler(async (req, res) => {
-  const result = await messageService.markConversationRead(req.params.id, req.user.id);
+  const result = await messageService.markConversationRead(
+    req.params.conversationId,
+    req.user.id,
+    { realtime: true },
+  );
   return success(res, result);
 });

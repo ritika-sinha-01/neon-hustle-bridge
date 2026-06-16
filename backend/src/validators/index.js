@@ -99,11 +99,11 @@ export const createConversationValidation = [
 ];
 
 export const sendMessageValidation = [
-  param('id').isUUID(),
+  param('conversationId').isUUID(),
   body('content').trim().notEmpty().isLength({ max: 2000 }),
 ];
 
-export const conversationIdValidation = [param('id').isUUID()];
+export const conversationIdValidation = [param('conversationId').isUUID()];
 
 export const notificationIdValidation = [param('id').isUUID()];
 

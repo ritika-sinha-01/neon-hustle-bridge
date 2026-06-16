@@ -163,3 +163,42 @@ export async function getParticipants(conversationId) {
   );
   return result.rows.map((row) => row.user_id);
 }
+
+export async function listPartnerUserIds(userId) {
+  const result = await query(
+    `SELECT DISTINCT cp2.user_id
+     FROM conversation_participants cp1
+     JOIN conversation_participants cp2
+       ON cp2.conversation_id = cp1.conversation_id AND cp2.user_id != $1
+     WHERE cp1.user_id = $1`,
+    [userId],
+  );
+  return result.rows.map((row) => row.user_id);
+}
+
+export async function getParticipantsEnriched(conversationId, excludeUserId = null) {
+  const values = [conversationId];
+  let excludeClause = '';
+
+  if (excludeUserId) {
+    values.push(excludeUserId);
+    excludeClause = 'AND cp.user_id != $2';
+  }
+
+  const result = await query(
+    `SELECT cp.user_id,
+            cp.last_read_at,
+            u.role,
+            COALESCE(sp.full_name, cl.company_name) AS full_name,
+            COALESCE(sp.avatar_url, cl.logo_url) AS avatar_url
+     FROM conversation_participants cp
+     JOIN users u ON u.id = cp.user_id
+     LEFT JOIN student_profiles sp ON sp.user_id = cp.user_id
+     LEFT JOIN client_profiles cl ON cl.user_id = cp.user_id
+     WHERE cp.conversation_id = $1 ${excludeClause}
+     ORDER BY cp.joined_at ASC`,
+    values,
+  );
+
+  return result.rows;
+}

@@ -4,9 +4,12 @@ import { env } from '../config/env.js';
 import { verifyAccessToken } from '../utils/jwt.js';
 import * as userModel from '../models/user.model.js';
 import * as messageModel from '../models/message.model.js';
-import * as notificationModel from '../models/notification.model.js';
-
-const userSockets = new Map();
+import * as messageService from '../services/message.service.js';
+import { setRealtimeServer } from '../utils/realtime.js';
+import {
+  registerConnection,
+  unregisterConnection,
+} from './presence.js';
 
 export function initSocket(httpServer) {
   const io = new Server(httpServer, {
@@ -17,9 +20,14 @@ export function initSocket(httpServer) {
     },
   });
 
+  setRealtimeServer(io);
+
   io.use(async (socket, next) => {
     try {
-      const token = socket.handshake.auth?.token ?? socket.handshake.headers?.authorization?.slice(7);
+      const token =
+        socket.handshake.auth?.token ??
+        socket.handshake.headers?.authorization?.slice(7);
+
       if (!token) {
         return next(new Error('Authentication required'));
       }
@@ -38,15 +46,19 @@ export function initSocket(httpServer) {
     }
   });
 
-  io.on('connection', (socket) => {
+  io.on('connection', async (socket) => {
     const userId = socket.user.id;
-    if (!userSockets.has(userId)) {
-      userSockets.set(userId, new Set());
-    }
-    userSockets.get(userId).add(socket.id);
+    const isFirstConnection = registerConnection(userId, socket.id);
     socket.join(`user:${userId}`);
 
-    socket.on('conversation:join', async (conversationId, callback) => {
+    if (isFirstConnection) {
+      const partnerIds = await messageModel.listPartnerUserIds(userId);
+      for (const partnerId of partnerIds) {
+        io.to(`user:${partnerId}`).emit('user_online', { userId });
+      }
+    }
+
+    socket.on('join_conversation', async (conversationId, callback) => {
       try {
         const conversation = await messageModel.findById(conversationId, userId);
         if (!conversation) {
@@ -54,13 +66,13 @@ export function initSocket(httpServer) {
           return;
         }
         socket.join(`conversation:${conversationId}`);
-        callback?.({ success: true });
+        callback?.({ success: true, conversationId });
       } catch (error) {
         callback?.({ success: false, error: error.message });
       }
     });
 
-    socket.on('message:send', async (payload, callback) => {
+    socket.on('send_message', async (payload, callback) => {
       try {
         const { conversationId, content } = payload ?? {};
         if (!conversationId || !content?.trim()) {
@@ -68,68 +80,61 @@ export function initSocket(httpServer) {
           return;
         }
 
-        const conversation = await messageModel.findById(conversationId, userId);
-        if (!conversation) {
-          callback?.({ success: false, error: 'Conversation not found' });
-          return;
-        }
-
-        const message = await messageModel.createMessage({
+        const message = await messageService.sendMessage(
           conversationId,
-          senderId: userId,
-          content: content.trim(),
-        });
-
-        const recipients = await messageModel.getOtherParticipants(conversationId, userId);
-        await Promise.all(
-          recipients.map(async (recipientId) => {
-            const notification = await notificationModel.create({
-              userId: recipientId,
-              type: 'message',
-              title: 'New message',
-              message: content.trim().slice(0, 120),
-              data: { conversationId, messageId: message.id },
-            });
-
-            io.to(`user:${recipientId}`).emit('notification:new', notification);
-          }),
+          userId,
+          content.trim(),
+          { realtime: true },
         );
 
-        const eventPayload = {
-          id: message.id,
-          conversationId,
-          senderId: userId,
-          content: message.content,
-          createdAt: message.created_at,
-        };
-
-        io.to(`conversation:${conversationId}`).emit('message:new', eventPayload);
-        callback?.({ success: true, data: eventPayload });
+        callback?.({ success: true, data: message });
       } catch (error) {
         callback?.({ success: false, error: error.message });
       }
     });
 
-    socket.on('typing:start', ({ conversationId }) => {
-      socket.to(`conversation:${conversationId}`).emit('typing:start', {
+    socket.on('message_read', async (payload, callback) => {
+      try {
+        const conversationId = payload?.conversationId;
+        if (!conversationId) {
+          callback?.({ success: false, error: 'conversationId is required' });
+          return;
+        }
+
+        const result = await messageService.markConversationRead(
+          conversationId,
+          userId,
+          { realtime: true },
+        );
+        callback?.({ success: true, data: result });
+      } catch (error) {
+        callback?.({ success: false, error: error.message });
+      }
+    });
+
+    socket.on('typing_start', ({ conversationId }) => {
+      if (!conversationId) return;
+      socket.to(`conversation:${conversationId}`).emit('typing_start', {
         conversationId,
         userId,
       });
     });
 
-    socket.on('typing:stop', ({ conversationId }) => {
-      socket.to(`conversation:${conversationId}`).emit('typing:stop', {
+    socket.on('typing_stop', ({ conversationId }) => {
+      if (!conversationId) return;
+      socket.to(`conversation:${conversationId}`).emit('typing_stop', {
         conversationId,
         userId,
       });
     });
 
-    socket.on('disconnect', () => {
-      const sockets = userSockets.get(userId);
-      if (sockets) {
-        sockets.delete(socket.id);
-        if (sockets.size === 0) {
-          userSockets.delete(userId);
+    socket.on('disconnect', async () => {
+      const isLastConnection = unregisterConnection(userId, socket.id);
+
+      if (isLastConnection) {
+        const partnerIds = await messageModel.listPartnerUserIds(userId);
+        for (const partnerId of partnerIds) {
+          io.to(`user:${partnerId}`).emit('user_offline', { userId });
         }
       }
     });
@@ -138,6 +143,8 @@ export function initSocket(httpServer) {
   return io;
 }
 
-export function emitToUser(io, userId, event, payload) {
-  io.to(`user:${userId}`).emit(event, payload);
+export { isUserOnline } from './presence.js';
+
+export function emitToUser(ioInstance, userId, event, payload) {
+  ioInstance.to(`user:${userId}`).emit(event, payload);
 }

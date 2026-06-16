@@ -17,17 +17,17 @@ router.use(authenticate);
 router.get('/conversations', validate(listPaginationValidation), messageController.listConversations);
 router.post('/conversations', validate(createConversationValidation), messageController.createConversation);
 router.get(
-  '/conversations/:id',
+  '/conversations/:conversationId',
   validate([...conversationIdValidation, ...listPaginationValidation]),
   messageController.getConversation,
 );
 router.post(
-  '/conversations/:id/messages',
+  '/conversations/:conversationId/messages',
   validate(sendMessageValidation),
   messageController.sendMessage,
 );
 router.patch(
-  '/conversations/:id/read',
+  '/conversations/:conversationId/read',
   validate(conversationIdValidation),
   messageController.markRead,
 );
