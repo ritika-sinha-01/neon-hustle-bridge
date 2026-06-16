@@ -79,6 +79,6 @@ $read | ConvertTo-Json -Depth 8
 
 Write-Host "`n=== 8. GET /notifications (client — offline message alerts) ===" -ForegroundColor Cyan
 $notifications = Invoke-Api -Method GET -Path "/notifications" -Token $clientToken
-$notifications | ConvertTo-Json -Depth 8
+$notifications.data.notifications | ConvertTo-Json -Depth 8
 
 Write-Host "`n=== All messaging REST tests completed ===" -ForegroundColor Green
