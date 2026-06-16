@@ -10,12 +10,12 @@ const OUTREACH_SELECT = `
   JOIN client_profiles cp ON cp.user_id = o.client_id
 `;
 
-export async function create({ studentId, opportunityId, type, generatedText }) {
+export async function create({ studentId, opportunityId, type, generatedText, model = null }) {
   const result = await query(
-    `INSERT INTO ai_outreach (student_id, opportunity_id, type, generated_text)
-     VALUES ($1, $2, $3, $4)
+    `INSERT INTO ai_outreach (student_id, opportunity_id, type, generated_text, model)
+     VALUES ($1, $2, $3, $4, $5)
      RETURNING *`,
-    [studentId, opportunityId, type, generatedText],
+    [studentId, opportunityId, type, generatedText, model],
   );
   return findById(result.rows[0].id);
 }

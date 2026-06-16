@@ -5,6 +5,12 @@ import * as userModel from '../models/user.model.js';
 import * as opportunityModel from '../models/opportunity.model.js';
 import * as aiOutreachModel from '../models/aiOutreach.model.js';
 import { AppError, notFound, badRequest } from '../utils/errors.js';
+import {
+  FALLBACK_MODEL,
+  generateLocalOutreach,
+} from './localOutreach.service.js';
+
+const GEMINI_MODEL = 'gemini-2.0-flash';
 
 const OUTREACH_TYPES = ['proposal', 'cold_email', 'linkedin', 'whatsapp'];
 
@@ -42,6 +48,7 @@ function mapOutreach(row) {
     companyName: row.company_name,
     type: row.type,
     generatedText: row.generated_text,
+    model: row.model,
     createdAt: row.created_at,
   };
 }
@@ -99,9 +106,60 @@ function getGeminiClient() {
   return new GoogleGenerativeAI(env.geminiApiKey);
 }
 
+function collectErrorText(error) {
+  const details = error?.details;
+  const detailMessage = typeof details === 'string' ? details : details?.message;
+
+  const parts = [
+    error?.message,
+    detailMessage,
+    error?.statusText,
+    error?.cause?.message,
+  ];
+  return parts.filter(Boolean).join(' ').toLowerCase();
+}
+
+function isGeminiFallbackError(error) {
+  if (!(error instanceof AppError)) return false;
+
+  if (error.code === 'AI_NOT_CONFIGURED') return true;
+
+  if (error.code !== 'AI_GENERATION_FAILED' && error.code !== 'AI_EMPTY_RESPONSE') {
+    return false;
+  }
+
+  const text = collectErrorText(error);
+  const details = error.details;
+  const status = typeof details === 'object' && details !== null
+    ? details.status
+    : null;
+
+  if (status === 429 || status === 403 || status === 401 || status === 404) {
+    return true;
+  }
+
+  return (
+    text.includes('429')
+    || text.includes('quota')
+    || text.includes('rate limit')
+    || text.includes('rate-limit')
+    || text.includes('resource exhausted')
+    || text.includes('too many requests')
+    || text.includes('permission denied')
+    || text.includes('api key')
+    || text.includes('invalid api key')
+    || text.includes('not found')
+    || text.includes('models/')
+    || text.includes('model is not')
+    || text.includes('model not found')
+    || text.includes('does not exist')
+    || text.includes('access')
+  );
+}
+
 async function generateWithGemini(prompt) {
   const genAI = getGeminiClient();
-  const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+  const model = genAI.getGenerativeModel({ model: GEMINI_MODEL });
 
   try {
     const result = await model.generateContent(prompt);
@@ -111,7 +169,7 @@ async function generateWithGemini(prompt) {
       throw new AppError('AI returned an empty response', 502, 'AI_EMPTY_RESPONSE');
     }
 
-    return text;
+    return { text, model: GEMINI_MODEL };
   } catch (error) {
     if (error instanceof AppError) throw error;
 
@@ -119,7 +177,10 @@ async function generateWithGemini(prompt) {
       'Failed to generate outreach content',
       502,
       'AI_GENERATION_FAILED',
-      error.message,
+      {
+        message: error.message,
+        status: error.status ?? error.statusCode ?? null,
+      },
     );
   }
 }
@@ -147,13 +208,27 @@ export async function generateOutreach(studentId, { opportunityId, type }) {
   }
 
   const prompt = buildPrompt(type, profile, opportunity);
-  const generatedText = await generateWithGemini(prompt);
+
+  let generatedText;
+  let model;
+
+  try {
+    const result = await generateWithGemini(prompt);
+    generatedText = result.text;
+    model = result.model;
+  } catch (error) {
+    if (!isGeminiFallbackError(error)) throw error;
+
+    generatedText = generateLocalOutreach(type, profile, opportunity);
+    model = FALLBACK_MODEL;
+  }
 
   const saved = await aiOutreachModel.create({
     studentId,
     opportunityId,
     type,
     generatedText,
+    model,
   });
 
   return mapOutreach(saved);

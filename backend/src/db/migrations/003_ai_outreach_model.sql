@@ -1,0 +1,2 @@
+ALTER TABLE ai_outreach
+  ADD COLUMN IF NOT EXISTS model VARCHAR(100);
