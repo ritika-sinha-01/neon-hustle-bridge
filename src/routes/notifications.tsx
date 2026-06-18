@@ -1,8 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { Eye, Mail, Trophy, Zap, Bell } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { AppShell } from "@/components/site/AppShell";
+import { apiClient } from "@/lib/api/client";
 
 export const Route = createFileRoute("/notifications")({
   head: () => ({ meta: [{ title: "Notifications — HustleBridge" }, { name: "description", content: "Stay on top of your hustle." }] }),
@@ -11,17 +12,63 @@ export const Route = createFileRoute("/notifications")({
 
 const filters = ["All", "Unread", "Mentions", "System"];
 
-const items = [
-  { i: Eye, t: 'Your application for "Build a Responsive Website" has been viewed by the client.', a: "2m ago", u: true, c: "#F5E400" },
-  { i: Mail, t: "You have a new message from TechLearn Academy.", a: "15m ago", u: true, c: "#FF0A78" },
-  { i: Trophy, t: "Congratulations! Your profile is 85% complete.", a: "1h ago", u: false, c: "#F5E400" },
-  { i: Zap, t: "New opportunity matches your skills — React Dashboard Build.", a: "2h ago", u: true, c: "#FF0A78" },
-  { i: Bell, t: "Reminder: Submit milestone 1 for Landing Page project by Friday.", a: "5h ago", u: false, c: "#F5E400" },
-  { i: Mail, t: "DesignHub liked your portfolio piece.", a: "1d ago", u: false, c: "#FF0A78" },
-];
-
 function Notifications() {
   const [f, setF] = useState("All");
+  const [notifications, setNotifications] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      try {
+        const data = await apiClient.get<any[]>("/notifications");
+        setNotifications(data);
+      } catch (err) {
+        console.error(err);
+        setError("Failed to load notifications");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchNotifications();
+  }, []);
+
+  const items = notifications.length > 0 ? notifications.map((n: any) => ({
+    i: n.type === "view" ? Eye : n.type === "message" ? Mail : n.type === "achievement" ? Trophy : n.type === "opportunity" ? Zap : Bell,
+    t: n.message || n.title || "Notification",
+    a: n.createdAt || "Recently",
+    u: !n.isRead,
+    c: n.type === "message" || n.type === "opportunity" ? "#FF0A78" : "#F5E400",
+  })) : [
+    { i: Eye, t: 'Your application for "Build a Responsive Website" has been viewed by the client.', a: "2m ago", u: true, c: "#F5E400" },
+    { i: Mail, t: "You have a new message from TechLearn Academy.", a: "15m ago", u: true, c: "#FF0A78" },
+    { i: Trophy, t: "Congratulations! Your profile is 85% complete.", a: "1h ago", u: false, c: "#F5E400" },
+    { i: Zap, t: "New opportunity matches your skills — React Dashboard Build.", a: "2h ago", u: true, c: "#FF0A78" },
+    { i: Bell, t: "Reminder: Submit milestone 1 for Landing Page project by Friday.", a: "5h ago", u: false, c: "#F5E400" },
+    { i: Mail, t: "DesignHub liked your portfolio piece.", a: "1d ago", u: false, c: "#FF0A78" },
+  ];
+
+  if (loading) {
+    return (
+      <AppShell title="Notifications">
+        <div className="flex items-center justify-center h-64">
+          <p className="text-white/60">Loading notifications...</p>
+        </div>
+      </AppShell>
+    );
+  }
+
+  if (error) {
+    return (
+      <AppShell title="Notifications">
+        <div className="flex items-center justify-center h-64">
+          <p className="text-red-400">{error}</p>
+        </div>
+      </AppShell>
+    );
+  }
+
   return (
     <AppShell title="Notifications">
       <div className="rounded-3xl glass-strong p-6">
@@ -34,7 +81,7 @@ function Notifications() {
           <button className="text-sm text-[#FF0A78] hover:underline">Mark all as read</button>
         </div>
         <ul className="mt-6 space-y-3">
-          {items.map((n, i) => {
+          {items.map((n: any, i: number) => {
             const Icon = n.i;
             return (
               <motion.li key={i} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.04 }} className={`flex items-start gap-4 rounded-2xl p-4 transition ${n.u ? "bg-[#F5E400]/[0.04] border border-[#F5E400]/20" : "bg-white/[0.03]"}`}>

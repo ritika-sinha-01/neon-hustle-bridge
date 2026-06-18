@@ -2,6 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { CheckCircle2, MapPin, Pencil, Share2, Star, Trophy } from "lucide-react";
 import { AppShell } from "@/components/site/AppShell";
+import { useEffect, useState } from "react";
+import { apiClient } from "@/lib/api/client";
 
 export const Route = createFileRoute("/profile")({
   head: () => ({ meta: [{ title: "Profile — HustleBridge" }, { name: "description", content: "Public student profile." }] }),
@@ -9,7 +11,47 @@ export const Route = createFileRoute("/profile")({
 });
 
 function Profile() {
-  const skills = ["React", "Node.js", "MongoDB", "JavaScript", "Tailwind CSS", "Express", "Figma", "TypeScript"];
+  const [profile, setProfile] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const data = await apiClient.get<any>("/students/profile");
+        setProfile(data);
+      } catch (err) {
+        console.error(err);
+        setError("Failed to load profile");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProfile();
+  }, []);
+
+  if (loading) {
+    return (
+      <AppShell title="Student Profile">
+        <div className="flex items-center justify-center h-64">
+          <p className="text-white/60">Loading profile...</p>
+        </div>
+      </AppShell>
+    );
+  }
+
+  if (error) {
+    return (
+      <AppShell title="Student Profile">
+        <div className="flex items-center justify-center h-64">
+          <p className="text-red-400">{error}</p>
+        </div>
+      </AppShell>
+    );
+  }
+
+  const skills = profile?.skills || ["React", "Node.js", "MongoDB", "JavaScript", "Tailwind CSS", "Express", "Figma", "TypeScript"];
   const portfolio = [["#F5E400","#FF0A78"],["#FF0A78","#F5E400"],["#F5E400","#a78bfa"],["#FF0A78","#34d399"]];
   const experience = [
     { y: "2024-Now", t: "Freelance Full-Stack Developer", d: "Built 14+ websites for SMBs and student startups." },
@@ -22,14 +64,14 @@ function Profile() {
         <div className="h-44 bg-gradient-to-r from-[#FF0A78] via-[#050505] to-[#F5E400]" />
         <div className="p-6">
           <div className="-mt-20 flex flex-wrap items-end gap-5">
-            <div className="grid h-32 w-32 shrink-0 place-items-center rounded-3xl border-4 border-[#050505] bg-gradient-to-br from-[#F5E400] to-[#FF0A78] text-4xl font-bold text-black">AV</div>
+            <div className="grid h-32 w-32 shrink-0 place-items-center rounded-3xl border-4 border-[#050505] bg-gradient-to-br from-[#F5E400] to-[#FF0A78] text-4xl font-bold text-black">{profile?.fullName?.substring(0, 2).toUpperCase() || "AV"}</div>
             <div className="flex-1">
               <div className="flex flex-wrap items-center gap-2">
-                <h1 className="text-3xl font-bold">Arjun Verma</h1>
+                <h1 className="text-3xl font-bold">{profile?.fullName || "Arjun Verma"}</h1>
                 <CheckCircle2 className="h-5 w-5 fill-[#F5E400] text-black" />
               </div>
-              <div className="text-white/60">Full Stack Developer</div>
-              <div className="mt-1 inline-flex items-center gap-1 text-sm text-white/50"><MapPin className="h-3 w-3" /> Delhi, India · Available for work</div>
+              <div className="text-white/60">{profile?.headline || "Full Stack Developer"}</div>
+              <div className="mt-1 inline-flex items-center gap-1 text-sm text-white/50"><MapPin className="h-3 w-3" /> {profile?.location || "Delhi, India"} · Available for work</div>
             </div>
             <div className="font-display text-6xl font-bold italic text-[#FF0A78] text-glow-pink hidden md:block">HUSTLE MODE</div>
             <div className="flex gap-2">
@@ -52,12 +94,12 @@ function Profile() {
         <div className="space-y-6">
           <div className="rounded-3xl glass-strong p-6">
             <h2 className="text-lg font-bold">About</h2>
-            <p className="mt-3 text-white/70">Passionate full-stack developer skilled in building modern web applications with clean UI and great performance. Currently in my final year, working with startups across India.</p>
+            <p className="mt-3 text-white/70">{profile?.bio || "Passionate full-stack developer skilled in building modern web applications with clean UI and great performance. Currently in my final year, working with startups across India."}</p>
           </div>
           <div className="rounded-3xl glass-strong p-6">
             <h2 className="text-lg font-bold">Skills</h2>
             <div className="mt-4 flex flex-wrap gap-2">
-              {skills.map((s, i) => <span key={s} className={`rounded-full px-3 py-1.5 text-xs font-semibold ${i % 2 === 0 ? "bg-[#F5E400] text-black" : "bg-[#FF0A78] text-white"}`}>{s}</span>)}
+              {skills.map((s: string, i: number) => <span key={s} className={`rounded-full px-3 py-1.5 text-xs font-semibold ${i % 2 === 0 ? "bg-[#F5E400] text-black" : "bg-[#FF0A78] text-white"}`}>{s}</span>)}
             </div>
           </div>
           <div className="rounded-3xl glass-strong p-6">

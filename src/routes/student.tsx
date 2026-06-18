@@ -2,43 +2,90 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { Bookmark, X, TrendingUp, Wallet, Eye, MessageCircle } from "lucide-react";
 import { AppShell } from "@/components/site/AppShell";
+import { useEffect, useState } from "react";
+import { apiClient } from "@/lib/api/client";
 
 export const Route = createFileRoute("/student")({
   head: () => ({ meta: [{ title: "Dashboard — HustleBridge" }, { name: "description", content: "Your student hustle dashboard." }] }),
   component: StudentDash,
 });
 
-const stats = [
-  { v: 12, l: "Applied", c: "#F5E400" },
-  { v: 4, l: "In Review", c: "#FF0A78" },
-  { v: 2, l: "Interview", c: "#F5E400" },
-  { v: 1, l: "Hired", c: "#FF0A78" },
-];
-
-const recommended = [
-  { title: "Build a Responsive Website for Coaching Institute", tags: ["Web Development", "HTML", "CSS"], budget: "₹8,000 - ₹15,000", mode: "Remote", ago: "3d ago", rating: 4.8 },
-  { title: "Social Media Content Creator", tags: ["SMM", "Content Creation"], budget: "₹5,000 - ₹10,000", mode: "Remote", ago: "3d ago", rating: 4.6 },
-  { title: "Mobile App UI/UX for Fitness Startup", tags: ["Figma", "UI/UX"], budget: "₹12,000 - ₹20,000", mode: "Remote", ago: "1d ago", rating: 4.9 },
-  { title: "Brand Identity for D2C Coffee Brand", tags: ["Branding", "Illustrator"], budget: "₹15,000 - ₹25,000", mode: "Hybrid", ago: "4h ago", rating: 5.0 },
-];
-
-const activity = [
-  { i: Eye, t: "Client viewed your application for Landing Page", a: "12m" },
-  { i: MessageCircle, t: "New message from TechLearn Academy", a: "1h" },
-  { i: Wallet, t: "Payment of ₹8,000 received for Logo Project", a: "3h" },
-  { i: TrendingUp, t: "Your profile views are up 24% this week", a: "1d" },
-];
-
 function StudentDash() {
+  const [dashboard, setDashboard] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const fetchDashboard = async () => {
+      try {
+        const data = await apiClient.get<any>("/students/dashboard");
+        setDashboard(data);
+      } catch (err) {
+        console.error(err);
+        setError("Failed to load dashboard");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDashboard();
+  }, []);
+
+  const stats = dashboard?.stats ? [
+    { v: dashboard.stats.applied || 0, l: "Applied", c: "#F5E400" },
+    { v: dashboard.stats.inReview || 0, l: "In Review", c: "#FF0A78" },
+    { v: dashboard.stats.interview || 0, l: "Interview", c: "#F5E400" },
+    { v: dashboard.stats.hired || 0, l: "Hired", c: "#FF0A78" },
+  ] : [
+    { v: 12, l: "Applied", c: "#F5E400" },
+    { v: 4, l: "In Review", c: "#FF0A78" },
+    { v: 2, l: "Interview", c: "#F5E400" },
+    { v: 1, l: "Hired", c: "#FF0A78" },
+  ];
+
+  const recommended = dashboard?.recommendedOpportunities || [
+    { title: "Build a Responsive Website for Coaching Institute", tags: ["Web Development", "HTML", "CSS"], budget: "₹8,000 - ₹15,000", mode: "Remote", ago: "3d ago", rating: 4.8 },
+    { title: "Social Media Content Creator", tags: ["SMM", "Content Creation"], budget: "₹5,000 - ₹10,000", mode: "Remote", ago: "3d ago", rating: 4.6 },
+    { title: "Mobile App UI/UX for Fitness Startup", tags: ["Figma", "UI/UX"], budget: "₹12,000 - ₹20,000", mode: "Remote", ago: "1d ago", rating: 4.9 },
+    { title: "Brand Identity for D2C Coffee Brand", tags: ["Branding", "Illustrator"], budget: "₹15,000 - ₹25,000", mode: "Hybrid", ago: "4h ago", rating: 5.0 },
+  ];
+
+  const activity = [
+    { i: Eye, t: "Client viewed your application for Landing Page", a: "12m" },
+    { i: MessageCircle, t: "New message from TechLearn Academy", a: "1h" },
+    { i: Wallet, t: "Payment of ₹8,000 received for Logo Project", a: "3h" },
+    { i: TrendingUp, t: "Your profile views are up 24% this week", a: "1d" },
+  ];
+
+  if (loading) {
+    return (
+      <AppShell title="Dashboard">
+        <div className="flex items-center justify-center h-64">
+          <p className="text-white/60">Loading dashboard...</p>
+        </div>
+      </AppShell>
+    );
+  }
+
+  if (error) {
+    return (
+      <AppShell title="Dashboard">
+        <div className="flex items-center justify-center h-64">
+          <p className="text-red-400">{error}</p>
+        </div>
+      </AppShell>
+    );
+  }
+
   return (
-    <AppShell title="Welcome back, Arjun 👋">
+    <AppShell title={`Welcome back, ${dashboard?.profile?.fullName || "Arjun"} 👋`}>
       {/* Welcome + Profile Strength */}
       <div className="grid gap-4 lg:grid-cols-[1fr_360px]">
         <div className="rounded-3xl glass-strong p-6">
           <div className="text-sm text-white/60">"Great things come to those who hustle."</div>
           <div className="mt-2 text-2xl font-bold">Let's land you the next gig.</div>
           <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
-            {stats.map((s) => (
+            {stats.map((s: any) => (
               <div key={s.l} className="rounded-2xl bg-white/[0.03] p-4">
                 <div className="flex items-center justify-between">
                   <div className="text-3xl font-bold" style={{ color: s.c }}>{s.v}</div>
@@ -66,7 +113,7 @@ function StudentDash() {
         <Link to="/opportunities" className="text-sm text-[#F5E400] hover:underline">View All</Link>
       </div>
       <div className="mt-4 grid gap-4 md:grid-cols-2">
-        {recommended.map((r, i) => (
+        {recommended.map((r: any, i: number) => (
           <motion.div key={r.title} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}>
             <Link to="/opportunities/$id" params={{ id: String(i + 1) }} className="block">
               <div className="group rounded-3xl glass-strong p-5 transition hover:border-[#F5E400]/40 hover:-translate-y-1">
@@ -75,7 +122,7 @@ function StudentDash() {
                   <div className="min-w-0 flex-1">
                     <h3 className="font-semibold leading-tight">{r.title}</h3>
                     <div className="mt-2 flex flex-wrap gap-1.5">
-                      {r.tags.map((t) => <span key={t} className="rounded-full bg-white/5 px-2.5 py-1 text-[11px] text-white/70">{t}</span>)}
+                      {r.tags.map((t: string) => <span key={t} className="rounded-full bg-white/5 px-2.5 py-1 text-[11px] text-white/70">{t}</span>)}
                     </div>
                     <div className="mt-4 flex items-center justify-between text-xs">
                       <span className="text-[#F5E400] font-semibold">{r.budget}</span>
@@ -112,7 +159,7 @@ function StudentDash() {
         <div className="rounded-3xl glass-strong p-6">
           <h2 className="text-xl font-bold">Activity Feed</h2>
           <ul className="mt-4 space-y-3">
-            {activity.map((a, i) => {
+            {activity.map((a: any, i: number) => {
               const Icon = a.i;
               return (
                 <li key={i} className="flex items-start gap-3 rounded-2xl bg-white/[0.03] p-3">

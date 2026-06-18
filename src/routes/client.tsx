@@ -2,29 +2,76 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { Plus, Users, Briefcase, Trophy, CheckCircle2 } from "lucide-react";
 import { AppShell } from "@/components/site/AppShell";
+import { useEffect, useState } from "react";
+import { apiClient } from "@/lib/api/client";
 
 export const Route = createFileRoute("/client")({
   head: () => ({ meta: [{ title: "Client Dashboard — HustleBridge" }, { name: "description", content: "Manage your projects and applicants." }] }),
   component: ClientDash,
 });
 
-const stats = [
-  { v: 8, l: "Active Projects", c: "#F5E400", i: Briefcase },
-  { v: 25, l: "Total Applicants", c: "#FF0A78", i: Users },
-  { v: 6, l: "Hired", c: "#F5E400", i: CheckCircle2 },
-  { v: 3, l: "Completed", c: "#FF0A78", i: Trophy },
-];
-
-const recent = [
-  { t: "Mobile App UI/UX Design", c: "Design", a: 12, s: "In Review", color: "#F5E400" },
-  { t: "E-commerce Website Development", c: "Development", a: 14, s: "Active", color: "#FF0A78" },
-  { t: "Logo & Brand Identity Design", c: "Design", a: 8, s: "Active", color: "#F5E400" },
-  { t: "Content Strategy & SEO Audit", c: "Marketing", a: 5, s: "Active", color: "#FF0A78" },
-];
-
 function ClientDash() {
+  const [dashboard, setDashboard] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const fetchDashboard = async () => {
+      try {
+        const data = await apiClient.get<any>("/clients/dashboard");
+        setDashboard(data);
+      } catch (err) {
+        console.error(err);
+        setError("Failed to load dashboard");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDashboard();
+  }, []);
+
+  const stats = dashboard?.stats ? [
+    { v: dashboard.stats.activeProjects || 0, l: "Active Projects", c: "#F5E400", i: Briefcase },
+    { v: dashboard.stats.totalApplicants || 0, l: "Total Applicants", c: "#FF0A78", i: Users },
+    { v: dashboard.stats.hired || 0, l: "Hired", c: "#F5E400", i: CheckCircle2 },
+    { v: dashboard.stats.completed || 0, l: "Completed", c: "#FF0A78", i: Trophy },
+  ] : [
+    { v: 8, l: "Active Projects", c: "#F5E400", i: Briefcase },
+    { v: 25, l: "Total Applicants", c: "#FF0A78", i: Users },
+    { v: 6, l: "Hired", c: "#F5E400", i: CheckCircle2 },
+    { v: 3, l: "Completed", c: "#FF0A78", i: Trophy },
+  ];
+
+  const recent = dashboard?.recentProjects || [
+    { t: "Mobile App UI/UX Design", c: "Design", a: 12, s: "In Review", color: "#F5E400" },
+    { t: "E-commerce Website Development", c: "Development", a: 14, s: "Active", color: "#FF0A78" },
+    { t: "Logo & Brand Identity Design", c: "Design", a: 8, s: "Active", color: "#F5E400" },
+    { t: "Content Strategy & SEO Audit", c: "Marketing", a: 5, s: "Active", color: "#FF0A78" },
+  ];
+
+  if (loading) {
+    return (
+      <AppShell title="Dashboard">
+        <div className="flex items-center justify-center h-64">
+          <p className="text-white/60">Loading dashboard...</p>
+        </div>
+      </AppShell>
+    );
+  }
+
+  if (error) {
+    return (
+      <AppShell title="Dashboard">
+        <div className="flex items-center justify-center h-64">
+          <p className="text-red-400">{error}</p>
+        </div>
+      </AppShell>
+    );
+  }
+
   return (
-    <AppShell title="Welcome back, TechNova Labs 👋">
+    <AppShell title={`Welcome back, ${dashboard?.profile?.companyName || "TechNova Labs"} 👋`}>
       <div className="rounded-3xl glass-strong p-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
@@ -56,7 +103,7 @@ function ClientDash() {
             <Link to="/opportunities" className="text-sm text-[#F5E400] hover:underline">View All</Link>
           </div>
           <ul className="mt-4 space-y-3">
-            {recent.map((p, i) => (
+            {recent.map((p: any, i: number) => (
               <motion.li key={p.t} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.05 }} className="flex items-center gap-4 rounded-2xl bg-white/[0.03] p-4">
                 <div className="grid h-12 w-12 place-items-center rounded-xl bg-gradient-to-br from-[#F5E400] to-[#FF0A78] font-bold text-black">{p.t[0]}</div>
                 <div className="min-w-0 flex-1">
