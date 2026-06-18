@@ -4,8 +4,14 @@ import { Paperclip, Phone, Search, Send, Smile, Video } from "lucide-react";
 import { useState, useEffect } from "react";
 import { AppShell } from "@/components/site/AppShell";
 import { apiClient } from "@/lib/api/client";
+import { isAuthenticated } from "@/lib/auth";
 
 export const Route = createFileRoute("/messages")({
+  beforeLoad: () => {
+    if (!isAuthenticated()) {
+      throw new Error("Unauthorized");
+    }
+  },
   head: () => ({ meta: [{ title: "Messages — HustleBridge" }, { name: "description", content: "Chat with clients." }] }),
   component: Messages,
 });

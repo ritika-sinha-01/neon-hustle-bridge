@@ -25,13 +25,13 @@ function RolePage() {
 
         <div className="mt-16 grid w-full gap-6 md:grid-cols-2">
           {[
-            { icon: GraduationCap, role: "HUSTLER", color: "#F5E400", desc: "Find freelance gigs, build your profile, and grow your hustle — open to students, creators, and side-hustlers.", to: "/student", cta: "Continue as Hustler" },
-            { icon: Briefcase, role: "BUSINESS", color: "#FF0A78", desc: "Post projects, hire talented hustlers, and grow your business.", to: "/client", cta: "Continue as Business" },
+            { icon: GraduationCap, role: "HUSTLER", color: "#F5E400", desc: "Find freelance gigs, build your profile, and grow your hustle — open to students, creators, and side-hustlers.", roleParam: "student", cta: "Continue as Hustler" },
+            { icon: Briefcase, role: "BUSINESS", color: "#FF0A78", desc: "Post projects, hire talented hustlers, and grow your business.", roleParam: "client", cta: "Continue as Business" },
           ].map((r, i) => {
             const Icon = r.icon;
             return (
               <motion.div key={r.role} initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 + i * 0.15 }}>
-                <Link to={r.to} className="group block">
+                <Link to="/register" search={{ role: r.roleParam }} as="/register" className="group block">
                   <div className="relative h-full rounded-3xl glass-strong p-10 transition hover:-translate-y-2" style={{ boxShadow: `inset 0 0 0 1px ${r.color}22` }}>
                     <div className="absolute inset-0 rounded-3xl opacity-0 transition group-hover:opacity-100" style={{ boxShadow: `0 0 60px -10px ${r.color}, inset 0 0 0 1px ${r.color}` }} />
                     <div className="relative">
@@ -51,7 +51,7 @@ function RolePage() {
           })}
         </div>
 
-        <p className="mt-10 text-sm text-white/50">Already have an account? <Link to="/student" className="text-[#F5E400] hover:underline">Login</Link></p>
+        <p className="mt-10 text-sm text-white/50">Already have an account? <Link to="/login" as="/login" className="text-[#F5E400] hover:underline">Login</Link></p>
       </div>
     </div>
   );

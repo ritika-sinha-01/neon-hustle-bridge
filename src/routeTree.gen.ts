@@ -12,10 +12,12 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as StudentRouteImport } from './routes/student'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as RoleRouteImport } from './routes/role'
+import { Route as RegisterRouteImport } from './routes/register'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as OpportunitiesRouteImport } from './routes/opportunities'
 import { Route as NotificationsRouteImport } from './routes/notifications'
 import { Route as MessagesRouteImport } from './routes/messages'
+import { Route as LoginRouteImport } from './routes/login'
 import { Route as CtaRouteImport } from './routes/cta'
 import { Route as ClientRouteImport } from './routes/client'
 import { Route as AiOutreachRouteImport } from './routes/ai-outreach'
@@ -37,6 +39,11 @@ const RoleRoute = RoleRouteImport.update({
   path: '/role',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RegisterRoute = RegisterRouteImport.update({
+  id: '/register',
+  path: '/register',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProfileRoute = ProfileRouteImport.update({
   id: '/profile',
   path: '/profile',
@@ -55,6 +62,11 @@ const NotificationsRoute = NotificationsRouteImport.update({
 const MessagesRoute = MessagesRouteImport.update({
   id: '/messages',
   path: '/messages',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CtaRoute = CtaRouteImport.update({
@@ -88,10 +100,12 @@ export interface FileRoutesByFullPath {
   '/ai-outreach': typeof AiOutreachRoute
   '/client': typeof ClientRoute
   '/cta': typeof CtaRoute
+  '/login': typeof LoginRoute
   '/messages': typeof MessagesRoute
   '/notifications': typeof NotificationsRoute
   '/opportunities': typeof OpportunitiesRouteWithChildren
   '/profile': typeof ProfileRoute
+  '/register': typeof RegisterRoute
   '/role': typeof RoleRoute
   '/settings': typeof SettingsRoute
   '/student': typeof StudentRoute
@@ -102,10 +116,12 @@ export interface FileRoutesByTo {
   '/ai-outreach': typeof AiOutreachRoute
   '/client': typeof ClientRoute
   '/cta': typeof CtaRoute
+  '/login': typeof LoginRoute
   '/messages': typeof MessagesRoute
   '/notifications': typeof NotificationsRoute
   '/opportunities': typeof OpportunitiesRouteWithChildren
   '/profile': typeof ProfileRoute
+  '/register': typeof RegisterRoute
   '/role': typeof RoleRoute
   '/settings': typeof SettingsRoute
   '/student': typeof StudentRoute
@@ -117,10 +133,12 @@ export interface FileRoutesById {
   '/ai-outreach': typeof AiOutreachRoute
   '/client': typeof ClientRoute
   '/cta': typeof CtaRoute
+  '/login': typeof LoginRoute
   '/messages': typeof MessagesRoute
   '/notifications': typeof NotificationsRoute
   '/opportunities': typeof OpportunitiesRouteWithChildren
   '/profile': typeof ProfileRoute
+  '/register': typeof RegisterRoute
   '/role': typeof RoleRoute
   '/settings': typeof SettingsRoute
   '/student': typeof StudentRoute
@@ -133,10 +151,12 @@ export interface FileRouteTypes {
     | '/ai-outreach'
     | '/client'
     | '/cta'
+    | '/login'
     | '/messages'
     | '/notifications'
     | '/opportunities'
     | '/profile'
+    | '/register'
     | '/role'
     | '/settings'
     | '/student'
@@ -147,10 +167,12 @@ export interface FileRouteTypes {
     | '/ai-outreach'
     | '/client'
     | '/cta'
+    | '/login'
     | '/messages'
     | '/notifications'
     | '/opportunities'
     | '/profile'
+    | '/register'
     | '/role'
     | '/settings'
     | '/student'
@@ -161,10 +183,12 @@ export interface FileRouteTypes {
     | '/ai-outreach'
     | '/client'
     | '/cta'
+    | '/login'
     | '/messages'
     | '/notifications'
     | '/opportunities'
     | '/profile'
+    | '/register'
     | '/role'
     | '/settings'
     | '/student'
@@ -176,10 +200,12 @@ export interface RootRouteChildren {
   AiOutreachRoute: typeof AiOutreachRoute
   ClientRoute: typeof ClientRoute
   CtaRoute: typeof CtaRoute
+  LoginRoute: typeof LoginRoute
   MessagesRoute: typeof MessagesRoute
   NotificationsRoute: typeof NotificationsRoute
   OpportunitiesRoute: typeof OpportunitiesRouteWithChildren
   ProfileRoute: typeof ProfileRoute
+  RegisterRoute: typeof RegisterRoute
   RoleRoute: typeof RoleRoute
   SettingsRoute: typeof SettingsRoute
   StudentRoute: typeof StudentRoute
@@ -208,6 +234,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RoleRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/register': {
+      id: '/register'
+      path: '/register'
+      fullPath: '/register'
+      preLoaderRoute: typeof RegisterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/profile': {
       id: '/profile'
       path: '/profile'
@@ -234,6 +267,13 @@ declare module '@tanstack/react-router' {
       path: '/messages'
       fullPath: '/messages'
       preLoaderRoute: typeof MessagesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/cta': {
@@ -291,10 +331,12 @@ const rootRouteChildren: RootRouteChildren = {
   AiOutreachRoute: AiOutreachRoute,
   ClientRoute: ClientRoute,
   CtaRoute: CtaRoute,
+  LoginRoute: LoginRoute,
   MessagesRoute: MessagesRoute,
   NotificationsRoute: NotificationsRoute,
   OpportunitiesRoute: OpportunitiesRouteWithChildren,
   ProfileRoute: ProfileRoute,
+  RegisterRoute: RegisterRoute,
   RoleRoute: RoleRoute,
   SettingsRoute: SettingsRoute,
   StudentRoute: StudentRoute,

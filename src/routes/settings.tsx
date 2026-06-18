@@ -3,8 +3,14 @@ import { Bell, CreditCard, Lock, Palette, ShieldCheck, User } from "lucide-react
 import { useState, useEffect } from "react";
 import { AppShell } from "@/components/site/AppShell";
 import { apiClient } from "@/lib/api/client";
+import { isAuthenticated } from "@/lib/auth";
 
 export const Route = createFileRoute("/settings")({
+  beforeLoad: () => {
+    if (!isAuthenticated()) {
+      throw new Error("Unauthorized");
+    }
+  },
   head: () => ({ meta: [{ title: "Settings — HustleBridge" }, { name: "description", content: "Manage your account." }] }),
   component: Settings,
 });

@@ -4,8 +4,14 @@ import { Bookmark, X, TrendingUp, Wallet, Eye, MessageCircle } from "lucide-reac
 import { AppShell } from "@/components/site/AppShell";
 import { useEffect, useState } from "react";
 import { apiClient } from "@/lib/api/client";
+import { isAuthenticated } from "@/lib/auth";
 
 export const Route = createFileRoute("/student")({
+  beforeLoad: () => {
+    if (!isAuthenticated()) {
+      throw new Error("Unauthorized");
+    }
+  },
   head: () => ({ meta: [{ title: "Dashboard — HustleBridge" }, { name: "description", content: "Your student hustle dashboard." }] }),
   component: StudentDash,
 });

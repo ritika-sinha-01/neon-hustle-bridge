@@ -21,8 +21,8 @@ function CTA() {
         </motion.h1>
         <p className="mx-auto mt-6 max-w-2xl text-lg text-white/70">Join thousands of hustlers and businesses building the future together. Your next big opportunity is one click away.</p>
         <div className="mt-10 flex flex-wrap justify-center gap-4">
-          <Link to="/role" className="rounded-full bg-[#F5E400] px-8 py-4 font-semibold text-black glow-yellow hover:scale-105 transition">Join as Hustler</Link>
-          <Link to="/role" className="rounded-full bg-[#FF0A78] px-8 py-4 font-semibold text-white glow-pink hover:scale-105 transition">Hire Hustler Talent</Link>
+          <Link to="/register" as="/register" className="rounded-full bg-[#F5E400] px-8 py-4 font-semibold text-black glow-yellow hover:scale-105 transition">Join as Hustler</Link>
+          <Link to="/register" as="/register" className="rounded-full bg-[#FF0A78] px-8 py-4 font-semibold text-white glow-pink hover:scale-105 transition">Hire Hustler Talent</Link>
         </div>
 
         <div className="mt-20 grid gap-4 md:grid-cols-3">

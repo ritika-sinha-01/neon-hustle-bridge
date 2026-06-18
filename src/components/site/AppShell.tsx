@@ -1,8 +1,9 @@
-import { Link, useRouterState } from "@tanstack/react-router";
+import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
 import { Logo } from "./Logo";
 import { NeonBackground } from "./NeonBackground";
-import { Bell, Bookmark, Briefcase, LayoutDashboard, MessageSquare, Search, Settings, Sparkles, User } from "lucide-react";
+import { Bell, Bookmark, Briefcase, LayoutDashboard, MessageSquare, Search, Settings, Sparkles, User, LogOut } from "lucide-react";
 import type { ReactNode } from "react";
+import { clearAuthSession, getStoredUser } from "@/lib/auth";
 
 const nav = [
   { to: "/student", label: "Dashboard", icon: LayoutDashboard },
@@ -17,6 +18,14 @@ const nav = [
 
 export function AppShell({ children, title }: { children: ReactNode; title?: string }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const navigate = useNavigate();
+  const user = getStoredUser();
+
+  const handleLogout = () => {
+    clearAuthSession();
+    navigate({ to: "/login" as any });
+  };
+
   return (
     <div className="relative min-h-screen">
       <NeonBackground />
@@ -43,12 +52,21 @@ export function AppShell({ children, title }: { children: ReactNode; title?: str
           </nav>
           <div className="mt-auto rounded-2xl glass p-4">
             <div className="flex items-center gap-3">
-              <div className="grid h-10 w-10 place-items-center rounded-full bg-gradient-to-br from-[#FF0A78] to-[#F5E400] text-sm font-bold text-black">AV</div>
-              <div>
-                <div className="text-sm font-semibold">Arjun Verma</div>
+              <div className="grid h-10 w-10 place-items-center rounded-full bg-gradient-to-br from-[#FF0A78] to-[#F5E400] text-sm font-bold text-black">
+                {user?.fullName?.substring(0, 2).toUpperCase() || user?.companyName?.substring(0, 2).toUpperCase() || "AV"}
+              </div>
+              <div className="min-w-0 flex-1">
+                <div className="truncate text-sm font-semibold">{user?.fullName || user?.companyName || "User"}</div>
                 <div className="text-xs text-white/50">View profile</div>
               </div>
             </div>
+            <button
+              onClick={handleLogout}
+              className="mt-3 flex w-full items-center gap-2 rounded-xl px-3 py-2 text-sm text-white/70 hover:bg-white/5 hover:text-white transition"
+            >
+              <LogOut className="h-4 w-4" />
+              Logout
+            </button>
           </div>
         </aside>
         <main className="min-w-0 flex-1">

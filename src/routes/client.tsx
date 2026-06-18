@@ -4,8 +4,14 @@ import { Plus, Users, Briefcase, Trophy, CheckCircle2 } from "lucide-react";
 import { AppShell } from "@/components/site/AppShell";
 import { useEffect, useState } from "react";
 import { apiClient } from "@/lib/api/client";
+import { isAuthenticated } from "@/lib/auth";
 
 export const Route = createFileRoute("/client")({
+  beforeLoad: () => {
+    if (!isAuthenticated()) {
+      throw new Error("Unauthorized");
+    }
+  },
   head: () => ({ meta: [{ title: "Client Dashboard — HustleBridge" }, { name: "description", content: "Manage your projects and applicants." }] }),
   component: ClientDash,
 });
