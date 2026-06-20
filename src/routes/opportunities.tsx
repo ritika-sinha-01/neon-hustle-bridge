@@ -26,11 +26,13 @@ function Marketplace() {
   useEffect(() => {
     const fetchOpportunities = async () => {
       try {
-        const data = await apiClient.get<any[]>("/opportunities");
+        const data = await apiClient.get<any>("/opportunities");
+        console.log("Opportunities data:", data);
 
-        const mapped = data.map((item: any) => ({
+        const opportunities = data.opportunities || [];
+        const mapped = opportunities.map((item: any) => ({
           id: item.id,
-          title: item.title,
+          title: item.title || "Untitled Opportunity",
           cat: item.category || "General",
           budget: `₹${item.budgetMin || 0} - ₹${item.budgetMax || 0}`,
           time: item.createdAt ? new Date(item.createdAt).toLocaleDateString() : "Recently",
@@ -40,9 +42,9 @@ function Marketplace() {
         }));
 
         setOpps(mapped);
-      } catch (err) {
+      } catch (err: any) {
         console.error(err);
-        setError("Failed to load opportunities");
+        setError(err.message || "Failed to load opportunities");
       } finally {
         setLoading(false);
       }

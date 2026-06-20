@@ -54,12 +54,7 @@ function StudentDash() {
     ago: opp.createdAt ? new Date(opp.createdAt).toLocaleDateString() : "Recently",
   })) || [];
 
-  const activity = [
-    { i: Eye, t: "Client viewed your application for Landing Page", a: "12m" },
-    { i: MessageCircle, t: "New message from TechLearn Academy", a: "1h" },
-    { i: Wallet, t: "Payment of ₹8,000 received for Logo Project", a: "3h" },
-    { i: TrendingUp, t: "Your profile views are up 24% this week", a: "1d" },
-  ];
+  const activity: Array<{ i: any; t: string; a: string }> = [];
 
   if (loading) {
     return (
@@ -162,30 +157,42 @@ function StudentDash() {
             <div className="pb-1 text-xs text-[#F5E400]">Total</div>
           </div>
           <div className="mt-6 flex h-40 items-end gap-3">
-            {[40, 65, 50, 80, 55, 95, 70].map((h, i) => (
-              <div key={i} className="flex flex-1 flex-col items-center gap-2">
-                <motion.div initial={{ height: 0 }} animate={{ height: `${h}%` }} transition={{ delay: i * 0.06, duration: 0.6 }} className="w-full rounded-t-lg bg-gradient-to-t from-[#FF0A78] to-[#F5E400]" />
-                <span className="text-[10px] text-white/40">{["J","F","M","A","M","J","J"][i]}</span>
+            {dashboard?.totalEarnings > 0 ? (
+              [40, 65, 50, 80, 55, 95, 70].map((h, i) => (
+                <div key={i} className="flex flex-1 flex-col items-center gap-2">
+                  <motion.div initial={{ height: 0 }} animate={{ height: `${h}%` }} transition={{ delay: i * 0.06, duration: 0.6 }} className="w-full rounded-t-lg bg-gradient-to-t from-[#FF0A78] to-[#F5E400]" />
+                  <span className="text-[10px] text-white/40">{["J","F","M","A","M","J","J"][i]}</span>
+                </div>
+              ))
+            ) : (
+              <div className="flex h-full w-full items-center justify-center">
+                <p className="text-white/60">No earnings data available yet.</p>
               </div>
-            ))}
+            )}
           </div>
         </div>
         <div className="rounded-3xl glass-strong p-6">
           <h2 className="text-xl font-bold">Activity Feed</h2>
-          <ul className="mt-4 space-y-3">
-            {activity.map((a: any, i: number) => {
-              const Icon = a.i;
-              return (
-                <li key={i} className="flex items-start gap-3 rounded-2xl bg-white/[0.03] p-3">
-                  <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-[#F5E400]/10 text-[#F5E400]"><Icon className="h-4 w-4" /></span>
-                  <div className="min-w-0 flex-1">
-                    <div className="text-sm">{a.t}</div>
-                    <div className="text-xs text-white/40">{a.a} ago</div>
-                  </div>
-                </li>
-              );
-            })}
-          </ul>
+          {activity.length > 0 ? (
+            <ul className="mt-4 space-y-3">
+              {activity.map((a: any, i: number) => {
+                const Icon = a.i;
+                return (
+                  <li key={i} className="flex items-start gap-3 rounded-2xl bg-white/[0.03] p-3">
+                    <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-[#F5E400]/10 text-[#F5E400]"><Icon className="h-4 w-4" /></span>
+                    <div className="min-w-0 flex-1">
+                      <div className="text-sm">{a.t}</div>
+                      <div className="text-xs text-white/40">{a.a} ago</div>
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+          ) : (
+            <div className="mt-4 rounded-2xl bg-white/[0.03] p-8 text-center">
+              <p className="text-white/60">No recent activity yet.</p>
+            </div>
+          )}
         </div>
       </div>
     </AppShell>

@@ -28,10 +28,11 @@ function Notifications() {
     const fetchNotifications = async () => {
       try {
         const data = await apiClient.get<any>("/notifications");
+        console.log("Notifications data:", data);
         setNotifications(data.notifications || []);
-      } catch (err) {
+      } catch (err: any) {
         console.error(err);
-        setError("Failed to load notifications");
+        setError(err.message || "Failed to load notifications");
       } finally {
         setLoading(false);
       }

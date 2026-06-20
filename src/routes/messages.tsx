@@ -33,13 +33,14 @@ function Messages() {
     const fetchConversations = async () => {
       try {
         const data = await apiClient.get<any>("/messages/conversations");
+        console.log("Conversations data:", data);
         setConversations(data.conversations || []);
         if (data.conversations?.length > 0) {
           setActive(data.conversations[0].id);
         }
-      } catch (err) {
+      } catch (err: any) {
         console.error(err);
-        setError("Failed to load conversations");
+        setError(err.message || "Failed to load conversations");
       } finally {
         setLoading(false);
       }
@@ -54,8 +55,9 @@ function Messages() {
     const fetchMessages = async () => {
       try {
         const data = await apiClient.get<any>(`/messages/conversations/${active}`);
+        console.log("Messages data:", data);
         setMessages(data.messages || []);
-      } catch (err) {
+      } catch (err: any) {
         console.error(err);
       }
     };

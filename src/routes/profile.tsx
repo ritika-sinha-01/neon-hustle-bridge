@@ -108,7 +108,11 @@ function Profile() {
         <div className="space-y-6">
           <div className="rounded-3xl glass-strong p-6">
             <h2 className="text-lg font-bold">About</h2>
-            <p className="mt-3 text-white/70">{profile?.bio || "Passionate full-stack developer skilled in building modern web applications with clean UI and great performance. Currently in my final year, working with startups across India."}</p>
+            {profile?.bio ? (
+              <p className="mt-3 text-white/70">{profile.bio}</p>
+            ) : (
+              <p className="mt-3 text-white/60">No bio added yet. Edit your profile to add information about yourself.</p>
+            )}
           </div>
           <div className="rounded-3xl glass-strong p-6">
             <h2 className="text-lg font-bold">Skills</h2>

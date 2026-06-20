@@ -20,10 +20,11 @@ function OppDetails() {
     const fetchOpportunity = async () => {
       try {
         const data = await apiClient.get<any>(`/opportunities/${id}`);
+        console.log("Opportunity details:", data);
         setOpportunity(data);
-      } catch (err) {
+      } catch (err: any) {
         console.error(err);
-        setError("Failed to load opportunity");
+        setError(err.message || "Failed to load opportunity");
       } finally {
         setLoading(false);
       }

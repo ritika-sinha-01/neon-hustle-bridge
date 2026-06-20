@@ -48,10 +48,11 @@ function AIOutreach() {
         goal: formData.goal,
         messageType: tab.toLowerCase().replace(" ", "_"),
       });
-      setGeneratedMessage(data.message || data.content || "");
-    } catch (err) {
+      console.log("AI outreach response:", data);
+      setGeneratedMessage(data.generatedText || data.message || data.content || "");
+    } catch (err: any) {
       console.error(err);
-      setError("Failed to generate message");
+      setError(err.message || "Failed to generate message");
     } finally {
       setLoading(false);
     }
