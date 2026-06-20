@@ -37,24 +37,21 @@ function ClientDash() {
     fetchDashboard();
   }, []);
 
-  const stats = dashboard?.stats ? [
-    { v: dashboard.stats.activeProjects || 0, l: "Active Projects", c: "#F5E400", i: Briefcase },
-    { v: dashboard.stats.totalApplicants || 0, l: "Total Applicants", c: "#FF0A78", i: Users },
-    { v: dashboard.stats.hired || 0, l: "Hired", c: "#F5E400", i: CheckCircle2 },
-    { v: dashboard.stats.completed || 0, l: "Completed", c: "#FF0A78", i: Trophy },
-  ] : [
-    { v: 8, l: "Active Projects", c: "#F5E400", i: Briefcase },
-    { v: 25, l: "Total Applicants", c: "#FF0A78", i: Users },
-    { v: 6, l: "Hired", c: "#F5E400", i: CheckCircle2 },
-    { v: 3, l: "Completed", c: "#FF0A78", i: Trophy },
+  const stats = [
+    { v: dashboard?.stats?.totalOpportunities || 0, l: "Total Projects", c: "#F5E400", i: Briefcase },
+    { v: dashboard?.stats?.pendingApplications || 0, l: "Pending", c: "#FF0A78", i: Users },
+    { v: dashboard?.stats?.inReviewApplications || 0, l: "In Review", c: "#F5E400", i: CheckCircle2 },
+    { v: dashboard?.stats?.hiredCount || 0, l: "Hired", c: "#FF0A78", i: Trophy },
   ];
 
-  const recent = dashboard?.recentProjects || [
-    { t: "Mobile App UI/UX Design", c: "Design", a: 12, s: "In Review", color: "#F5E400" },
-    { t: "E-commerce Website Development", c: "Development", a: 14, s: "Active", color: "#FF0A78" },
-    { t: "Logo & Brand Identity Design", c: "Design", a: 8, s: "Active", color: "#F5E400" },
-    { t: "Content Strategy & SEO Audit", c: "Marketing", a: 5, s: "Active", color: "#FF0A78" },
-  ];
+  const recent = dashboard?.recentOpportunities?.map((opp: any) => ({
+    id: opp.id,
+    t: opp.title || "Untitled Project",
+    c: opp.category || "General",
+    a: opp.applicationCount || 0,
+    s: opp.status || "Active",
+    color: opp.status === "Active" ? "#FF0A78" : "#F5E400",
+  })) || [];
 
   if (loading) {
     return (
@@ -109,36 +106,35 @@ function ClientDash() {
             <Link to="/opportunities" className="text-sm text-[#F5E400] hover:underline">View All</Link>
           </div>
           <ul className="mt-4 space-y-3">
-            {recent.map((p: any, i: number) => (
-              <motion.li key={p.t} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.05 }} className="flex items-center gap-4 rounded-2xl bg-white/[0.03] p-4">
-                <div className="grid h-12 w-12 place-items-center rounded-xl bg-gradient-to-br from-[#F5E400] to-[#FF0A78] font-bold text-black">{p.t[0]}</div>
-                <div className="min-w-0 flex-1">
-                  <div className="truncate font-semibold">{p.t}</div>
-                  <div className="text-xs text-white/50">{p.c} · {p.a} Applicants</div>
-                </div>
-                <span className="rounded-full px-3 py-1 text-xs font-semibold text-black" style={{ background: p.color }}>{p.s}</span>
-              </motion.li>
-            ))}
+            {recent.length > 0 ? (
+              recent.map((p: any) => (
+                <motion.li key={p.id} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} className="flex items-center gap-4 rounded-2xl bg-white/[0.03] p-4">
+                  <div className="grid h-12 w-12 place-items-center rounded-xl bg-gradient-to-br from-[#F5E400] to-[#FF0A78] font-bold text-black">{p.t?.[0] || "P"}</div>
+                  <div className="min-w-0 flex-1">
+                    <div className="truncate font-semibold">{p.t}</div>
+                    <div className="text-xs text-white/50">{p.c} · {p.a} Applicants</div>
+                  </div>
+                  <span className="rounded-full px-3 py-1 text-xs font-semibold text-black" style={{ background: p.color }}>{p.s}</span>
+                </motion.li>
+              ))
+            ) : (
+              <li className="rounded-2xl bg-white/[0.03] p-8 text-center">
+                <p className="text-white/60">No projects yet. Post your first opportunity to get started!</p>
+              </li>
+            )}
           </ul>
         </div>
 
         <div className="space-y-4">
           <div className="rounded-3xl glass-strong p-6">
-            <h3 className="text-sm font-semibold uppercase tracking-wider text-white/60">Budget Tracking</h3>
-            <div className="mt-3 font-display text-4xl font-bold text-[#F5E400]">₹1.8L<span className="text-base font-normal text-white/40"> / ₹2.5L</span></div>
-            <div className="mt-4 h-2 overflow-hidden rounded-full bg-white/5">
-              <motion.div initial={{ width: 0 }} animate={{ width: "72%" }} transition={{ duration: 1 }} className="h-full bg-gradient-to-r from-[#F5E400] to-[#FF0A78]" />
-            </div>
-            <div className="mt-2 text-xs text-white/50">72% of monthly budget used</div>
+            <h3 className="text-sm font-semibold uppercase tracking-wider text-white/60">Total Projects</h3>
+            <div className="mt-3 font-display text-4xl font-bold text-[#F5E400]">{dashboard?.stats?.totalOpportunities || 0}</div>
+            <div className="mt-2 text-xs text-white/50">Opportunities posted</div>
           </div>
           <div className="rounded-3xl glass-strong p-6">
-            <h3 className="text-sm font-semibold uppercase tracking-wider text-white/60">Team Collaboration</h3>
-            <div className="mt-4 flex -space-x-2">
-              {["RA","SK","MJ","PR","+3"].map((n, i) => (
-                <div key={i} className="grid h-10 w-10 place-items-center rounded-full border-2 border-[#050505] bg-gradient-to-br from-[#FF0A78] to-[#F5E400] text-xs font-bold text-black">{n}</div>
-              ))}
-            </div>
-            <div className="mt-4 text-xs text-white/60">7 team members collaborating across 4 active projects.</div>
+            <h3 className="text-sm font-semibold uppercase tracking-wider text-white/60">Total Applications</h3>
+            <div className="mt-3 font-display text-4xl font-bold text-[#FF0A78]">{dashboard?.stats?.pendingApplications + dashboard?.stats?.inReviewApplications || 0}</div>
+            <div className="mt-2 text-xs text-white/50">Applications received</div>
           </div>
         </div>
       </div>

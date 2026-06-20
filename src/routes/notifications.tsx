@@ -27,8 +27,8 @@ function Notifications() {
   useEffect(() => {
     const fetchNotifications = async () => {
       try {
-        const data = await apiClient.get<any[]>("/notifications");
-        setNotifications(data);
+        const data = await apiClient.get<any>("/notifications");
+        setNotifications(data.notifications || []);
       } catch (err) {
         console.error(err);
         setError("Failed to load notifications");
@@ -40,20 +40,14 @@ function Notifications() {
     fetchNotifications();
   }, []);
 
-  const items = notifications.length > 0 ? notifications.map((n: any) => ({
+  const items = notifications.map((n: any) => ({
     i: n.type === "view" ? Eye : n.type === "message" ? Mail : n.type === "achievement" ? Trophy : n.type === "opportunity" ? Zap : Bell,
     t: n.message || n.title || "Notification",
-    a: n.createdAt || "Recently",
+    a: n.createdAt ? new Date(n.createdAt).toLocaleDateString() : "Recently",
     u: !n.isRead,
     c: n.type === "message" || n.type === "opportunity" ? "#FF0A78" : "#F5E400",
-  })) : [
-    { i: Eye, t: 'Your application for "Build a Responsive Website" has been viewed by the client.', a: "2m ago", u: true, c: "#F5E400" },
-    { i: Mail, t: "You have a new message from TechLearn Academy.", a: "15m ago", u: true, c: "#FF0A78" },
-    { i: Trophy, t: "Congratulations! Your profile is 85% complete.", a: "1h ago", u: false, c: "#F5E400" },
-    { i: Zap, t: "New opportunity matches your skills — React Dashboard Build.", a: "2h ago", u: true, c: "#FF0A78" },
-    { i: Bell, t: "Reminder: Submit milestone 1 for Landing Page project by Friday.", a: "5h ago", u: false, c: "#F5E400" },
-    { i: Mail, t: "DesignHub liked your portfolio piece.", a: "1d ago", u: false, c: "#FF0A78" },
-  ];
+    id: n.id,
+  }));
 
   if (loading) {
     return (
@@ -87,21 +81,27 @@ function Notifications() {
           <button className="text-sm text-[#FF0A78] hover:underline">Mark all as read</button>
         </div>
         <ul className="mt-6 space-y-3">
-          {items.map((n: any, i: number) => {
-            const Icon = n.i;
-            return (
-              <motion.li key={i} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.04 }} className={`flex items-start gap-4 rounded-2xl p-4 transition ${n.u ? "bg-[#F5E400]/[0.04] border border-[#F5E400]/20" : "bg-white/[0.03]"}`}>
-                <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl" style={{ background: `${n.c}1a`, color: n.c }}>
-                  <Icon className="h-5 w-5" />
-                </span>
-                <div className="min-w-0 flex-1">
-                  <div className="text-sm">{n.t}</div>
-                  <div className="mt-1 text-xs text-white/40">{n.a}</div>
-                </div>
-                {n.u && <span className="mt-2 h-2 w-2 rounded-full bg-[#FF0A78] animate-neon-pulse" />}
-              </motion.li>
-            );
-          })}
+          {items.length > 0 ? (
+            items.map((n: any, i: number) => {
+              const Icon = n.i;
+              return (
+                <motion.li key={n.id || i} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.04 }} className={`flex items-start gap-4 rounded-2xl p-4 transition ${n.u ? "bg-[#F5E400]/[0.04] border border-[#F5E400]/20" : "bg-white/[0.03]"}`}>
+                  <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl" style={{ background: `${n.c}1a`, color: n.c }}>
+                    <Icon className="h-5 w-5" />
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <div className="text-sm">{n.t}</div>
+                    <div className="mt-1 text-xs text-white/40">{n.a}</div>
+                  </div>
+                  {n.u && <span className="mt-2 h-2 w-2 rounded-full bg-[#FF0A78] animate-neon-pulse" />}
+                </motion.li>
+              );
+            })
+          ) : (
+            <li className="rounded-2xl bg-white/[0.03] p-8 text-center">
+              <p className="text-white/60">No notifications yet. Stay active to receive updates!</p>
+            </li>
+          )}
         </ul>
       </div>
     </AppShell>

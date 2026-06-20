@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { Search, SlidersHorizontal, Bookmark, Clock } from "lucide-react";
 import { AppShell } from "@/components/site/AppShell";
 import { useEffect, useState } from "react";
+import { apiClient } from "@/lib/api/client";
 
 export const Route = createFileRoute("/opportunities")({
   head: () => ({
@@ -23,32 +24,31 @@ function Marketplace() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    const API_URL =
-      import.meta.env.VITE_API_URL || "http://localhost:4000/api/v1";
-
-    fetch(`${API_URL}/opportunities`)
-      .then((res) => res.json())
-      .then((result) => {
-        const data = result?.data || [];
+    const fetchOpportunities = async () => {
+      try {
+        const data = await apiClient.get<any[]>("/opportunities");
 
         const mapped = data.map((item: any) => ({
           id: item.id,
           title: item.title,
           cat: item.category || "General",
           budget: `₹${item.budgetMin || 0} - ₹${item.budgetMax || 0}`,
-          time: "Recently",
+          time: item.createdAt ? new Date(item.createdAt).toLocaleDateString() : "Recently",
           color: "#FFEA00",
+          workMode: item.workMode || "Remote",
+          applicationCount: item.applicationCount || 0,
         }));
 
         setOpps(mapped);
-      })
-      .catch((err) => {
+      } catch (err) {
         console.error(err);
         setError("Failed to load opportunities");
-      })
-      .finally(() => {
+      } finally {
         setLoading(false);
-      });
+      }
+    };
+
+    fetchOpportunities();
   }, []);
 
   const filteredOpps =
@@ -134,8 +134,13 @@ function Marketplace() {
                   </span>
 
                   <span className="inline-flex items-center gap-1 text-xs text-white/40">
-                    <Clock className="h-3 w-3" /> {o.time}
+                    <Clock className="h-3 w-3" /> {o.workMode}
                   </span>
+                </div>
+
+                <div className="mt-2 flex items-center justify-between text-xs text-white/40">
+                  <span>{o.applicationCount} applicants</span>
+                  <span>{o.time}</span>
                 </div>
 
                 <button className="mt-4 w-full rounded-full bg-[#FF0A78] py-2.5 text-sm font-semibold text-white opacity-0 transition group-hover:opacity-100">

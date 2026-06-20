@@ -98,15 +98,7 @@ function AIOutreach() {
             {generatedMessage ? (
               <div className="whitespace-pre-wrap">{generatedMessage}</div>
             ) : (
-              <>
-                <div className="text-white/50">Subject: Build a High-Converting Website for TechLearn Academy</div>
-                <div className="mt-3">Hi TechLearn Academy Team,</div>
-                <p className="mt-3">I came across your platform and really loved the work you're doing in the education space.</p>
-                <p className="mt-3">I specialize in building modern, responsive websites that are fast, SEO-friendly, and designed to convert visitors into students.</p>
-                <p className="mt-3">I'd love to help you build a website that elevates your brand and provides a seamless experience for your students.</p>
-                <p className="mt-3">Looking forward to the opportunity! 🚀</p>
-                <p className="mt-3">Best regards,<br/>Arjun Verma</p>
-              </>
+              <div className="text-white/50">Fill in the details and click "Generate Message" to create your AI-powered outreach message.</div>
             )}
           </motion.div>
           <div className="mt-4 flex gap-3">
