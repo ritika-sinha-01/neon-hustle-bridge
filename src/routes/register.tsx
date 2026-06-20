@@ -51,7 +51,14 @@ function Register() {
       }
 
       const response = await apiClient.post<any>("/auth/register", payload);
+      console.log("Register response:", response);
+
       const { user, tokens } = response;
+      if (!user || !tokens || !tokens.accessToken) {
+        setError("Invalid response from server. Please try again.");
+        return;
+      }
+
       setAuthSession(user, tokens);
 
       // Redirect based on role
@@ -63,6 +70,7 @@ function Register() {
         navigate({ to: "/" });
       }
     } catch (err: any) {
+      console.error("Registration error:", err);
       setError(err.message || "Registration failed. Please try again.");
     } finally {
       setLoading(false);
@@ -214,7 +222,7 @@ function Register() {
 
         <p className="mt-8 text-sm text-white/50">
           Already have an account?{" "}
-          <Link to="/login" as="/login" className="text-[#F5E400] hover:underline">
+          <Link to="/login" className="text-[#F5E400] hover:underline">
             Sign in
           </Link>
         </p>

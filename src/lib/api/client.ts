@@ -4,6 +4,8 @@ const API_URL = import.meta.env.VITE_API_URL || "http://localhost:4000/api/v1";
 
 async function api<T>(path: string, options: RequestInit = {}): Promise<T> {
   const token = getAccessToken();
+  console.log(`API Request: ${path}`, { hasToken: !!token });
+
   const res = await fetch(`${API_URL}${path}`, {
     ...options,
     headers: {
@@ -14,6 +16,7 @@ async function api<T>(path: string, options: RequestInit = {}): Promise<T> {
   });
 
   if (res.status === 401) {
+    console.error("401 Unauthorized - clearing session");
     clearAuthSession();
     if (typeof window !== 'undefined') {
       window.location.href = '/login' as any;
@@ -23,10 +26,13 @@ async function api<T>(path: string, options: RequestInit = {}): Promise<T> {
 
   if (!res.ok) {
     const error = await res.json().catch(() => ({ message: res.statusText }));
+    console.error("API Error:", error);
     throw new Error(error.message || "Request failed");
   }
 
   const json = await res.json();
+  console.log(`API Response: ${path}`, json);
+
   if (!json.success) {
     throw new Error(json.error?.message || "Request failed");
   }

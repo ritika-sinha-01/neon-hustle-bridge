@@ -30,7 +30,14 @@ function Login() {
         password,
       });
 
+      console.log("Login response:", response);
+
       const { user, tokens } = response;
+      if (!user || !tokens || !tokens.accessToken) {
+        setError("Invalid response from server. Please try again.");
+        return;
+      }
+
       setAuthSession(user, tokens);
 
       // Redirect based on role
@@ -42,6 +49,7 @@ function Login() {
         navigate({ to: "/" });
       }
     } catch (err: any) {
+      console.error("Login error:", err);
       setError(err.message || "Login failed. Please try again.");
     } finally {
       setLoading(false);
@@ -116,7 +124,7 @@ function Login() {
 
         <p className="mt-8 text-sm text-white/50">
           Don't have an account?{" "}
-          <Link to="/register" as="/register" className="text-[#F5E400] hover:underline">
+          <Link to="/register" className="text-[#F5E400] hover:underline">
             Sign up
           </Link>
         </p>

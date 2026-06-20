@@ -25,10 +25,11 @@ function ClientDash() {
     const fetchDashboard = async () => {
       try {
         const data = await apiClient.get<any>("/clients/dashboard");
+        console.log("Client dashboard data:", data);
         setDashboard(data);
-      } catch (err) {
-        console.error(err);
-        setError("Failed to load dashboard");
+      } catch (err: any) {
+        console.error("Dashboard error:", err);
+        setError(err.message || "Failed to load dashboard");
       } finally {
         setLoading(false);
       }

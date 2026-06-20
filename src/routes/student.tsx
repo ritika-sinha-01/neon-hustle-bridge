@@ -25,10 +25,11 @@ function StudentDash() {
     const fetchDashboard = async () => {
       try {
         const data = await apiClient.get<any>("/students/dashboard");
+        console.log("Student dashboard data:", data);
         setDashboard(data);
-      } catch (err) {
-        console.error(err);
-        setError("Failed to load dashboard");
+      } catch (err: any) {
+        console.error("Dashboard error:", err);
+        setError(err.message || "Failed to load dashboard");
       } finally {
         setLoading(false);
       }
@@ -37,16 +38,11 @@ function StudentDash() {
     fetchDashboard();
   }, []);
 
-  const stats = dashboard?.stats ? [
-    { v: dashboard.stats.applied || 0, l: "Applied", c: "#F5E400" },
-    { v: dashboard.stats.inReview || 0, l: "In Review", c: "#FF0A78" },
-    { v: dashboard.stats.interview || 0, l: "Interview", c: "#F5E400" },
-    { v: dashboard.stats.hired || 0, l: "Hired", c: "#FF0A78" },
-  ] : [
-    { v: 12, l: "Applied", c: "#F5E400" },
-    { v: 4, l: "In Review", c: "#FF0A78" },
-    { v: 2, l: "Interview", c: "#F5E400" },
-    { v: 1, l: "Hired", c: "#FF0A78" },
+  const stats = [
+    { v: dashboard?.stats?.applied || 0, l: "Applied", c: "#F5E400" },
+    { v: dashboard?.stats?.inReview || 0, l: "In Review", c: "#FF0A78" },
+    { v: dashboard?.stats?.interview || 0, l: "Interview", c: "#F5E400" },
+    { v: dashboard?.stats?.hired || 0, l: "Hired", c: "#FF0A78" },
   ];
 
   const recommended = dashboard?.recommendedOpportunities?.map((opp: any) => ({

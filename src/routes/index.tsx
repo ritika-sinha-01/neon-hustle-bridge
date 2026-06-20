@@ -66,7 +66,7 @@ function Index() {
               HustleBridge connects ambitious hustlers with real-world projects from verified clients. Find work, build experience, grow your hustle — all in one place.
             </p>
             <div className="mt-10 flex flex-wrap gap-4">
-              <Link to="/register" as="/register" className="group inline-flex items-center gap-2 rounded-full bg-[#F5E400] px-7 py-4 text-base font-semibold text-black transition hover:scale-105 glow-yellow">
+              <Link to="/register" className="group inline-flex items-center gap-2 rounded-full bg-[#F5E400] px-7 py-4 text-base font-semibold text-black transition hover:scale-105 glow-yellow">
                 Get Started <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" />
               </Link>
               <Link to="/opportunities" className="inline-flex items-center gap-2 rounded-full border border-[#FF0A78]/60 px-7 py-4 text-base font-semibold text-white transition hover:bg-[#FF0A78]/10 hover:glow-pink">
@@ -206,8 +206,8 @@ function Index() {
           <div className="relative grid items-center gap-6 md:grid-cols-[1fr_auto]">
             <h2 className="font-display text-4xl font-bold sm:text-5xl">Ready to grow your <span className="text-[#FF0A78] text-glow-pink">hustle?</span></h2>
             <div className="flex flex-wrap gap-3">
-              <Link to="/register" as="/register" className="rounded-full bg-[#F5E400] px-7 py-4 font-semibold text-black glow-yellow hover:scale-105 transition">Join as Hustler</Link>
-              <Link to="/register" as="/register" className="rounded-full bg-[#FF0A78] px-7 py-4 font-semibold text-white glow-pink hover:scale-105 transition">Hire Talent</Link>
+              <Link to="/register" className="rounded-full bg-[#F5E400] px-7 py-4 font-semibold text-black glow-yellow hover:scale-105 transition">Join as Hustler</Link>
+              <Link to="/register" className="rounded-full bg-[#FF0A78] px-7 py-4 font-semibold text-white glow-pink hover:scale-105 transition">Hire Talent</Link>
             </div>
           </div>
         </div>
