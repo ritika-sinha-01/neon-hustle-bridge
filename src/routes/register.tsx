@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate, useSearch } from "@tanstack/react-router";
 import { motion } from "framer-motion";
-import { Mail, Lock, User, Building2, ArrowRight, AlertCircle } from "lucide-react";
+import { Mail, Lock, User, Building2, AlertCircle } from "lucide-react";
 import { useState } from "react";
 import { NeonBackground } from "@/components/site/NeonBackground";
 import { Logo } from "@/components/site/Logo";
@@ -8,9 +8,21 @@ import { apiClient } from "@/lib/api/client";
 import { setAuthSession } from "@/lib/auth";
 
 export const Route = createFileRoute("/register")({
-  head: () => ({ meta: [{ title: "Register — HustleBridge" }, { name: "description", content: "Create your account." }] }),
+  head: () => ({
+    meta: [
+      { title: "Register — HustleBridge" },
+      { name: "description", content: "Create your account." },
+    ],
+  }),
   component: Register,
 }) as any;
+
+function validatePassword(password: string): string | null {
+  if (password.length < 8) return "Password must be at least 8 characters.";
+  if (!/[A-Z]/.test(password)) return "Password must contain at least one uppercase letter.";
+  if (!/[0-9]/.test(password)) return "Password must contain at least one number.";
+  return null;
+}
 
 function Register() {
   const navigate = useNavigate();
@@ -30,20 +42,21 @@ function Register() {
     e.preventDefault();
     setError("");
 
+    const passwordError = validatePassword(password);
+    if (passwordError) {
+      setError(passwordError);
+      return;
+    }
+
     if (password !== confirmPassword) {
-      setError("Passwords do not match");
+      setError("Passwords do not match.");
       return;
     }
 
     setLoading(true);
 
     try {
-      const payload: any = {
-        email,
-        password,
-        role,
-      };
-
+      const payload: Record<string, string> = { email, password, role };
       if (role === "student") {
         payload.fullName = fullName;
       } else {
@@ -51,17 +64,15 @@ function Register() {
       }
 
       const response = await apiClient.post<any>("/auth/register", payload);
-      console.log("Register response:", response);
-
       const { user, tokens } = response;
-      if (!user || !tokens || !tokens.accessToken) {
+
+      if (!user || !tokens?.accessToken) {
         setError("Invalid response from server. Please try again.");
         return;
       }
 
       setAuthSession(user, tokens);
 
-      // Redirect based on role
       if (user.role === "student") {
         navigate({ to: "/student" });
       } else if (user.role === "client") {
@@ -69,9 +80,8 @@ function Register() {
       } else {
         navigate({ to: "/" });
       }
-    } catch (err: any) {
-      console.error("Registration error:", err);
-      setError(err.message || "Registration failed. Please try again.");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Registration failed. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -82,7 +92,11 @@ function Register() {
       <NeonBackground />
       <div className="mx-auto flex max-w-md flex-col items-center px-6 pt-12 pb-20">
         <Logo />
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mt-16 text-center">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mt-16 text-center"
+        >
           <div className="text-sm uppercase tracking-[0.3em] text-white/50">Join</div>
           <h1 className="mt-3 font-display text-6xl font-bold sm:text-7xl">
             HUSTLE<span className="text-[#FF0A78] text-glow-pink">BRIDGE</span>
@@ -97,6 +111,7 @@ function Register() {
           className="mt-8 flex w-full gap-4"
         >
           <button
+            type="button"
             onClick={() => setRole("student")}
             className={`flex-1 rounded-full px-4 py-2 text-sm font-semibold transition ${
               role === "student"
@@ -107,6 +122,7 @@ function Register() {
             Hustler
           </button>
           <button
+            type="button"
             onClick={() => setRole("client")}
             className={`flex-1 rounded-full px-4 py-2 text-sm font-semibold transition ${
               role === "client"
@@ -126,8 +142,8 @@ function Register() {
           className="mt-8 w-full space-y-5"
         >
           {error && (
-            <div className="flex items-center gap-3 rounded-2xl bg-red-500/10 border border-red-500/20 p-4 text-red-400">
-              <AlertCircle className="h-5 w-5" />
+            <div className="flex items-center gap-3 rounded-2xl border border-red-500/20 bg-red-500/10 p-4 text-red-400">
+              <AlertCircle className="h-5 w-5 shrink-0" />
               <span className="text-sm">{error}</span>
             </div>
           )}
@@ -143,7 +159,7 @@ function Register() {
                   onChange={(e) => setFullName(e.target.value)}
                   placeholder="Enter your full name"
                   className="flex-1 bg-transparent text-sm outline-none placeholder:text-white/40"
-                  required={role === "student"}
+                  required
                 />
               </div>
             </div>
@@ -158,7 +174,7 @@ function Register() {
                   onChange={(e) => setCompanyName(e.target.value)}
                   placeholder="Enter your company name"
                   className="flex-1 bg-transparent text-sm outline-none placeholder:text-white/40"
-                  required={role === "client"}
+                  required
                 />
               </div>
             </div>
@@ -190,9 +206,12 @@ function Register() {
                 placeholder="Create a password"
                 className="flex-1 bg-transparent text-sm outline-none placeholder:text-white/40"
                 required
-                minLength={6}
+                minLength={8}
               />
             </div>
+            <p className="mt-1.5 text-xs text-white/40">
+              At least 8 characters, one uppercase letter, and one number.
+            </p>
           </div>
 
           <div>
@@ -206,7 +225,7 @@ function Register() {
                 placeholder="Confirm your password"
                 className="flex-1 bg-transparent text-sm outline-none placeholder:text-white/40"
                 required
-                minLength={6}
+                minLength={8}
               />
             </div>
           </div>
@@ -214,7 +233,7 @@ function Register() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full rounded-full bg-[#F5E400] px-7 py-4 font-semibold text-black glow-yellow hover:scale-105 transition disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+            className="w-full rounded-full bg-[#F5E400] px-7 py-4 font-semibold text-black glow-yellow transition hover:scale-105 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:scale-100"
           >
             {loading ? "Creating account..." : "Create Account"}
           </button>

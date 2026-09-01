@@ -5,7 +5,7 @@ import { useState } from "react";
 import { NeonBackground } from "@/components/site/NeonBackground";
 import { Logo } from "@/components/site/Logo";
 import { apiClient } from "@/lib/api/client";
-import { setAuthSession, getStoredUser } from "@/lib/auth";
+import { setAuthSession } from "@/lib/auth";
 
 export const Route = createFileRoute("/login")({
   head: () => ({ meta: [{ title: "Login — HustleBridge" }, { name: "description", content: "Sign in to your account." }] }),
@@ -29,8 +29,6 @@ function Login() {
         email,
         password,
       });
-
-      console.log("Login response:", response);
 
       const { user, tokens } = response;
       if (!user || !tokens || !tokens.accessToken) {
@@ -128,6 +126,14 @@ function Login() {
             Sign up
           </Link>
         </p>
+
+        <div className="mt-6 w-full rounded-2xl border border-white/10 bg-white/[0.03] p-4 text-xs text-white/50">
+          <p className="font-semibold text-white/70">Demo accounts (recruiter preview)</p>
+          <p className="mt-1">Student: demo.student@hustlebridge.local</p>
+          <p>Client: demo.client@hustlebridge.local</p>
+          <p className="mt-1">Password: DemoPass1</p>
+          <p className="mt-2 text-white/40">Run backend seed first: cd backend && npm run db:seed</p>
+        </div>
       </div>
     </div>
   );

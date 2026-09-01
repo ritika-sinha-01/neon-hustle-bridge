@@ -4,14 +4,10 @@ import { Copy, RefreshCcw, Sparkles, Wand2 } from "lucide-react";
 import { useState } from "react";
 import { AppShell } from "@/components/site/AppShell";
 import { apiClient } from "@/lib/api/client";
-import { isAuthenticated } from "@/lib/auth";
+import { requireAuth } from "@/lib/require-auth";
 
 export const Route = createFileRoute("/ai-outreach")({
-  beforeLoad: () => {
-    if (!isAuthenticated()) {
-      throw new Error("Unauthorized");
-    }
-  },
+  beforeLoad: requireAuth,
   head: () => ({ meta: [{ title: "AI Outreach — HustleBridge" }, { name: "description", content: "Generate winning proposals with AI." }] }),
   component: AIOutreach,
 });

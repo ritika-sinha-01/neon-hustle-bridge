@@ -120,6 +120,7 @@ export function mapOpportunity(row) {
     companyName: row.company_name,
     clientLogo: row.client_logo,
     applicationCount: row.application_count,
+    isDemo: row.is_demo ?? false,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };

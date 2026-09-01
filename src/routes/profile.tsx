@@ -4,14 +4,10 @@ import { CheckCircle2, MapPin, Pencil, Share2, Star, Trophy } from "lucide-react
 import { AppShell } from "@/components/site/AppShell";
 import { useEffect, useState } from "react";
 import { apiClient } from "@/lib/api/client";
-import { isAuthenticated } from "@/lib/auth";
+import { requireAuth } from "@/lib/require-auth";
 
 export const Route = createFileRoute("/profile")({
-  beforeLoad: () => {
-    if (!isAuthenticated()) {
-      throw new Error("Unauthorized");
-    }
-  },
+  beforeLoad: requireAuth,
   head: () => ({ meta: [{ title: "Profile — HustleBridge" }, { name: "description", content: "Public student profile." }] }),
   component: Profile,
 });

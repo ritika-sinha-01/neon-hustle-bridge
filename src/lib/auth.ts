@@ -27,11 +27,9 @@ export function getRefreshToken(): string | null {
 
 export function setAuthSession(user: User, tokens: AuthTokens): void {
   if (typeof window === 'undefined') return;
-  console.log("Setting auth session:", { user, tokens });
   localStorage.setItem(ACCESS_TOKEN_KEY, tokens.accessToken);
   localStorage.setItem(REFRESH_TOKEN_KEY, tokens.refreshToken);
   localStorage.setItem(USER_KEY, JSON.stringify(user));
-  console.log("Auth session set. Access token:", getAccessToken());
 }
 
 export function clearAuthSession(): void {
