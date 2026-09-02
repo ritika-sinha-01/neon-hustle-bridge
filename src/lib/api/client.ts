@@ -6,9 +6,14 @@ interface ApiErrorBody {
   success?: boolean;
   error?: {
     message?: string;
+    code?: string;
     details?: Array<{ msg?: string; path?: string }>;
   };
   message?: string;
+}
+
+function isAuthRoute(path: string): boolean {
+  return path.startsWith("/auth/login") || path.startsWith("/auth/register");
 }
 
 function parseErrorMessage(body: ApiErrorBody, fallback: string): string {
@@ -19,8 +24,35 @@ function parseErrorMessage(body: ApiErrorBody, fallback: string): string {
   return body.error?.message || body.message || fallback;
 }
 
+function friendlyStatusMessage(status: number, body: ApiErrorBody): string {
+  const parsed = parseErrorMessage(body, "");
+  if (parsed) return parsed;
+
+  switch (status) {
+    case 400:
+      return "Invalid request. Please check your input and try again.";
+    case 401:
+      return "Invalid email or password.";
+    case 409:
+      return "Email is already registered. Try signing in instead.";
+    case 422:
+      return "Validation failed. Please check your input.";
+    case 429:
+      return "Too many attempts. Please wait a moment and try again.";
+    case 500:
+      return "Server error. Please try again later.";
+    case 503:
+      return "Service temporarily unavailable. Please try again later.";
+    default:
+      return status >= 500
+        ? "Server error. Please try again later."
+        : "Request failed. Please try again.";
+  }
+}
+
 async function api<T>(path: string, options: RequestInit = {}): Promise<T> {
   const token = getAccessToken();
+  const authRoute = isAuthRoute(path);
 
   let res: Response;
   try {
@@ -28,7 +60,7 @@ async function api<T>(path: string, options: RequestInit = {}): Promise<T> {
       ...options,
       headers: {
         "Content-Type": "application/json",
-        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        ...(token && !authRoute ? { Authorization: `Bearer ${token}` } : {}),
         ...options.headers,
       },
     });
@@ -38,7 +70,7 @@ async function api<T>(path: string, options: RequestInit = {}): Promise<T> {
     );
   }
 
-  if (res.status === 401) {
+  if (res.status === 401 && !authRoute) {
     clearAuthSession();
     if (typeof window !== "undefined") {
       window.location.href = "/login";
@@ -48,7 +80,7 @@ async function api<T>(path: string, options: RequestInit = {}): Promise<T> {
 
   if (!res.ok) {
     const body: ApiErrorBody = await res.json().catch(() => ({}));
-    throw new Error(parseErrorMessage(body, res.statusText || "Request failed"));
+    throw new Error(friendlyStatusMessage(res.status, body));
   }
 
   const json = await res.json();
@@ -70,3 +102,17 @@ export const apiClient = {
     api<T>(path, { method: "PATCH", body: JSON.stringify(body) }),
   delete: <T>(path: string) => api<T>(path, { method: "DELETE" }),
 };
+
+export interface AuthResponse {
+  user: {
+    id: string;
+    email: string;
+    role: "student" | "client";
+    fullName?: string;
+    companyName?: string;
+  };
+  tokens: {
+    accessToken: string;
+    refreshToken: string;
+  };
+}

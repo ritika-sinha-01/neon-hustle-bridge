@@ -126,6 +126,12 @@ function Index() {
               >
                 Explore Opportunities
               </Link>
+              <Link
+                to="/login"
+                className="inline-flex items-center gap-2 rounded-full border border-[#F5E400]/40 px-7 py-4 text-base font-semibold text-[#F5E400] transition hover:bg-[#F5E400]/10"
+              >
+                Try the Demo
+              </Link>
             </div>
           </motion.div>
 

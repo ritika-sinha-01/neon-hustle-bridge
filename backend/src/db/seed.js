@@ -3,11 +3,11 @@ import { hashPassword } from '../utils/jwt.js';
 import * as userModel from '../models/user.model.js';
 import * as opportunityModel from '../models/opportunity.model.js';
 
-const DEMO_PASSWORD = 'DemoPass1';
+const DEMO_PASSWORD = 'Password1';
 
 const DEMO_ACCOUNTS = [
   {
-    email: 'demo.student@hustlebridge.local',
+    email: 'demo.student@hustlebridge.dev',
     role: 'student',
     profile: { fullName: 'Demo Student' },
     studentExtras: {
@@ -19,13 +19,13 @@ const DEMO_ACCOUNTS = [
     },
   },
   {
-    email: 'demo.client@hustlebridge.local',
+    email: 'demo.client@hustlebridge.dev',
     role: 'client',
     profile: { companyName: 'Demo Ventures Pvt Ltd' },
     clientExtras: {
       industry: 'Technology',
       description: 'Demo client account for posting and reviewing opportunities.',
-      website: 'https://demo.hustlebridge.local',
+      website: 'https://demo.hustlebridge.dev',
       location: 'Bengaluru, India',
     },
   },
@@ -162,13 +162,31 @@ async function ensureDemoUser(account, passwordHash) {
 
     if (account.role === 'student') {
       await userModel.createStudentProfile(user.id, account.profile);
-      await userModel.updateStudentProfile(user.id, account.studentExtras);
     } else {
       await userModel.createClientProfile(user.id, account.profile);
-      await userModel.updateClientProfile(user.id, account.clientExtras);
     }
 
     console.log(`[seed] created ${account.role}`, account.email);
+  } else {
+    await pool.query(
+      'UPDATE users SET password_hash = $1, role = $2, is_active = TRUE WHERE id = $3',
+      [passwordHash, account.role, user.id],
+    );
+    console.log(`[seed] updated ${account.role}`, account.email);
+  }
+
+  if (account.role === 'student') {
+    const profile = await userModel.getStudentProfile(user.id);
+    if (!profile) {
+      await userModel.createStudentProfile(user.id, account.profile);
+    }
+    await userModel.updateStudentProfile(user.id, account.studentExtras);
+  } else {
+    const profile = await userModel.getClientProfile(user.id);
+    if (!profile) {
+      await userModel.createClientProfile(user.id, account.profile);
+    }
+    await userModel.updateClientProfile(user.id, account.clientExtras);
   }
 
   await pool.query('UPDATE users SET is_demo = TRUE WHERE id = $1', [user.id]);
@@ -231,14 +249,13 @@ async function seed() {
   await ensureDemoUser(studentAccount, passwordHash);
   const client = await ensureDemoUser(clientAccount, passwordHash);
 
-  let created = 0;
   for (const sample of DEMO_OPPORTUNITIES) {
-    const id = await upsertDemoOpportunity(client.id, sample);
-    if (id) created += 1;
+    await upsertDemoOpportunity(client.id, sample);
   }
 
   const countResult = await pool.query(
-    "SELECT COUNT(*)::int AS total FROM opportunities WHERE is_demo = TRUE AND status = 'open'",
+    "SELECT COUNT(*)::int AS total FROM opportunities WHERE is_demo = TRUE AND status = 'open' AND client_id = $1",
+    [client.id],
   );
 
   console.log('[seed] complete');
@@ -246,7 +263,6 @@ async function seed() {
   console.log('[seed] demo credentials (for recruiter demos only):');
   console.log(`  student -> ${studentAccount.email} / ${DEMO_PASSWORD}`);
   console.log(`  client  -> ${clientAccount.email} / ${DEMO_PASSWORD}`);
-  console.log('[seed] run: cd backend && npm run db:migrate && npm run db:seed');
 
   await pool.end();
 }

@@ -109,8 +109,8 @@ npm run dev
 
 | Role | Email | Password |
 |------|-------|----------|
-| Student | `demo.student@hustlebridge.local` | `DemoPass1` |
-| Client | `demo.client@hustlebridge.local` | `DemoPass1` |
+| Student | `demo.student@hustlebridge.dev` | `Password1` |
+| Client | `demo.client@hustlebridge.dev` | `Password1` |
 
 These are demo-only accounts marked with `is_demo = true` in the database. Do not use weak passwords for real production accounts.
 
