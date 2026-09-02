@@ -1,29 +1,52 @@
 import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
 import { Logo } from "./Logo";
 import { NeonBackground } from "./NeonBackground";
-import { Bell, Bookmark, Briefcase, LayoutDashboard, MessageSquare, Search, Settings, Sparkles, User, LogOut } from "lucide-react";
+import {
+  Bell,
+  Briefcase,
+  LayoutDashboard,
+  MessageSquare,
+  Settings,
+  Sparkles,
+  User,
+  LogOut,
+} from "lucide-react";
 import type { ReactNode } from "react";
 import { clearAuthSession, getStoredUser } from "@/lib/auth";
 
-const nav = [
+const studentNav = [
   { to: "/student", label: "Dashboard", icon: LayoutDashboard },
   { to: "/opportunities", label: "Opportunities", icon: Briefcase },
   { to: "/profile", label: "My Profile", icon: User },
   { to: "/ai-outreach", label: "AI Outreach", icon: Sparkles },
   { to: "/messages", label: "Messages", icon: MessageSquare },
   { to: "/notifications", label: "Notifications", icon: Bell },
-  { to: "/client", label: "Client View", icon: Bookmark },
   { to: "/settings", label: "Settings", icon: Settings },
 ] as const;
+
+const clientNav = [
+  { to: "/client", label: "Dashboard", icon: LayoutDashboard },
+  { to: "/opportunities", label: "Marketplace", icon: Briefcase },
+  { to: "/messages", label: "Messages", icon: MessageSquare },
+  { to: "/notifications", label: "Notifications", icon: Bell },
+  { to: "/settings", label: "Settings", icon: Settings },
+] as const;
+
+function userInitials(user: ReturnType<typeof getStoredUser>) {
+  const name = user?.fullName || user?.companyName || "U";
+  return name.substring(0, 2).toUpperCase();
+}
 
 export function AppShell({ children, title }: { children: ReactNode; title?: string }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const navigate = useNavigate();
   const user = getStoredUser();
+  const nav = user?.role === "client" ? clientNav : studentNav;
+  const profilePath = user?.role === "client" ? "/settings" : "/profile";
 
   const handleLogout = () => {
     clearAuthSession();
-    navigate({ to: "/login" as any });
+    navigate({ to: "/login" });
   };
 
   return (
@@ -41,7 +64,9 @@ export function AppShell({ children, title }: { children: ReactNode; title?: str
                   key={item.to}
                   to={item.to}
                   className={`group relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition ${
-                    active ? "bg-[#F5E400] text-black font-semibold glow-yellow" : "text-white/70 hover:bg-white/5 hover:text-white"
+                    active
+                      ? "bg-[#F5E400] font-semibold text-black glow-yellow"
+                      : "text-white/70 hover:bg-white/5 hover:text-white"
                   }`}
                 >
                   <Icon className="h-4 w-4" />
@@ -51,18 +76,21 @@ export function AppShell({ children, title }: { children: ReactNode; title?: str
             })}
           </nav>
           <div className="mt-auto rounded-2xl glass p-4">
-            <div className="flex items-center gap-3">
+            <Link to={profilePath} className="flex items-center gap-3 rounded-xl transition hover:bg-white/5">
               <div className="grid h-10 w-10 place-items-center rounded-full bg-gradient-to-br from-[#FF0A78] to-[#F5E400] text-sm font-bold text-black">
-                {user?.fullName?.substring(0, 2).toUpperCase() || user?.companyName?.substring(0, 2).toUpperCase() || "AV"}
+                {userInitials(user)}
               </div>
               <div className="min-w-0 flex-1">
-                <div className="truncate text-sm font-semibold">{user?.fullName || user?.companyName || "User"}</div>
+                <div className="truncate text-sm font-semibold">
+                  {user?.fullName || user?.companyName || "User"}
+                </div>
                 <div className="text-xs text-white/50">View profile</div>
               </div>
-            </div>
+            </Link>
             <button
+              type="button"
               onClick={handleLogout}
-              className="mt-3 flex w-full items-center gap-2 rounded-xl px-3 py-2 text-sm text-white/70 hover:bg-white/5 hover:text-white transition"
+              className="mt-3 flex w-full items-center gap-2 rounded-xl px-3 py-2 text-sm text-white/70 transition hover:bg-white/5 hover:text-white"
             >
               <LogOut className="h-4 w-4" />
               Logout
@@ -71,18 +99,20 @@ export function AppShell({ children, title }: { children: ReactNode; title?: str
         </aside>
         <main className="min-w-0 flex-1">
           <div className="mb-6 flex items-center justify-between gap-4">
-            <div>
-              <h1 className="text-2xl font-bold sm:text-3xl">{title}</h1>
-            </div>
+            <h1 className="text-2xl font-bold sm:text-3xl">{title}</h1>
             <div className="flex items-center gap-3">
-              <div className="hidden items-center gap-2 rounded-full glass px-4 py-2 md:flex">
-                <Search className="h-4 w-4 text-white/50" />
-                <input placeholder="Search…" className="w-48 bg-transparent text-sm outline-none placeholder:text-white/40" />
-              </div>
-              <Link to="/notifications" className="grid h-10 w-10 place-items-center rounded-full glass text-white/80 hover:text-[#F5E400]">
+              <Link
+                to="/notifications"
+                className="grid h-10 w-10 place-items-center rounded-full glass text-white/80 hover:text-[#F5E400]"
+              >
                 <Bell className="h-4 w-4" />
               </Link>
-              <div className="grid h-10 w-10 place-items-center rounded-full bg-gradient-to-br from-[#FF0A78] to-[#F5E400] text-sm font-bold text-black">AV</div>
+              <Link
+                to={profilePath}
+                className="grid h-10 w-10 place-items-center rounded-full bg-gradient-to-br from-[#FF0A78] to-[#F5E400] text-sm font-bold text-black"
+              >
+                {userInitials(user)}
+              </Link>
             </div>
           </div>
           {children}

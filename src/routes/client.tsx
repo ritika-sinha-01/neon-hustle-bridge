@@ -368,14 +368,59 @@ function ClientDash() {
                   </div>
                   <p className="mt-2 text-sm text-white/60 line-clamp-3">{a.coverLetter}</p>
                   {a.status === "pending" && (
-                    <div className="mt-3 flex gap-2">
+                    <div className="mt-3 flex flex-wrap gap-2">
                       <button
+                        type="button"
                         onClick={() => updateApplicantStatus(a.id, "in_review")}
                         className="rounded-full bg-[#F5E400] px-4 py-1.5 text-xs font-semibold text-black"
                       >
                         Accept for Review
                       </button>
                       <button
+                        type="button"
+                        onClick={() => updateApplicantStatus(a.id, "rejected")}
+                        className="rounded-full bg-white/10 px-4 py-1.5 text-xs font-semibold"
+                      >
+                        Reject
+                      </button>
+                    </div>
+                  )}
+                  {a.status === "in_review" && (
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      <button
+                        type="button"
+                        onClick={() => updateApplicantStatus(a.id, "interview")}
+                        className="rounded-full bg-[#F5E400] px-4 py-1.5 text-xs font-semibold text-black"
+                      >
+                        Schedule Interview
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => updateApplicantStatus(a.id, "hired")}
+                        className="rounded-full bg-[#FF0A78] px-4 py-1.5 text-xs font-semibold text-white"
+                      >
+                        Hire
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => updateApplicantStatus(a.id, "rejected")}
+                        className="rounded-full bg-white/10 px-4 py-1.5 text-xs font-semibold"
+                      >
+                        Reject
+                      </button>
+                    </div>
+                  )}
+                  {a.status === "interview" && (
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      <button
+                        type="button"
+                        onClick={() => updateApplicantStatus(a.id, "hired")}
+                        className="rounded-full bg-[#FF0A78] px-4 py-1.5 text-xs font-semibold text-white"
+                      >
+                        Hire
+                      </button>
+                      <button
+                        type="button"
                         onClick={() => updateApplicantStatus(a.id, "rejected")}
                         className="rounded-full bg-white/10 px-4 py-1.5 text-xs font-semibold"
                       >

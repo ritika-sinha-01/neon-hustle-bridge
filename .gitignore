@@ -16,9 +16,21 @@ dist-ssr
 .nitro
 *.local
 
+# Environment / secrets (keep .env.example trackable as placeholders only)
+.env
+.env.local
+.env.production
+.env.development
+.env.*
+!.env.example
+!**/.env.example
+
 # Backend
 backend/.env
 backend/node_modules
+backend/.env.local
+backend/.env.production
+backend/.env.development
 
 # Wrangler / Cloudflare
 .wrangler/

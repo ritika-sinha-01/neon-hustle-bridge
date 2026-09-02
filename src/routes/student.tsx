@@ -16,6 +16,7 @@ function StudentDash() {
   const [dashboard, setDashboard] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [showProfileStrength, setShowProfileStrength] = useState(true);
 
   useEffect(() => {
     const fetchDashboard = async () => {
@@ -91,19 +92,28 @@ function StudentDash() {
             ))}
           </div>
         </div>
-        <div className="relative rounded-3xl bg-[#F5E400] p-6 text-black glow-yellow">
-          <button className="absolute right-4 top-4 opacity-60 hover:opacity-100"><X className="h-4 w-4" /></button>
-          <div className="text-sm font-medium opacity-70">Profile Strength</div>
-          <div className="mt-1 font-display text-6xl font-bold">{dashboard?.profile?.profileStrength || 0}%</div>
-          <div className="mt-3 text-sm font-medium">
-            {dashboard?.profile?.profileStrength >= 100
-              ? "Your profile is complete!"
-              : "Keep it up! Add more details to reach 100%."}
+        {showProfileStrength && (
+          <div className="relative rounded-3xl bg-[#F5E400] p-6 text-black glow-yellow">
+            <button
+              type="button"
+              onClick={() => setShowProfileStrength(false)}
+              className="absolute right-4 top-4 opacity-60 hover:opacity-100"
+              aria-label="Dismiss profile strength card"
+            >
+              <X className="h-4 w-4" />
+            </button>
+            <div className="text-sm font-medium opacity-70">Profile Strength</div>
+            <div className="mt-1 font-display text-6xl font-bold">{dashboard?.profile?.profileStrength || 0}%</div>
+            <div className="mt-3 text-sm font-medium">
+              {dashboard?.profile?.profileStrength >= 100
+                ? "Your profile is complete!"
+                : "Keep it up! Add more details to reach 100%."}
+            </div>
+            <div className="mt-4 h-2 overflow-hidden rounded-full bg-black/20">
+              <motion.div initial={{ width: 0 }} animate={{ width: `${dashboard?.profile?.profileStrength || 0}%` }} transition={{ duration: 1 }} className="h-full bg-black" />
+            </div>
           </div>
-          <div className="mt-4 h-2 overflow-hidden rounded-full bg-black/20">
-            <motion.div initial={{ width: 0 }} animate={{ width: `${dashboard?.profile?.profileStrength || 0}%` }} transition={{ duration: 1 }} className="h-full bg-black" />
-          </div>
-        </div>
+        )}
       </div>
 
       {/* Recommended */}

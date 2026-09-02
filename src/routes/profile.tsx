@@ -1,6 +1,5 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { motion } from "framer-motion";
-import { CheckCircle2, MapPin, Pencil, Share2, Star, Trophy } from "lucide-react";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { CheckCircle2, MapPin, Pencil, Share2 } from "lucide-react";
 import { AppShell } from "@/components/site/AppShell";
 import { useEffect, useState } from "react";
 import { apiClient } from "@/lib/api/client";
@@ -75,8 +74,31 @@ function Profile() {
             </div>
             <div className="font-display text-6xl font-bold italic text-[#FF0A78] text-glow-pink hidden md:block">HUSTLE MODE</div>
             <div className="flex gap-2">
-              <button className="inline-flex items-center gap-2 rounded-full glass px-4 py-2 text-sm"><Pencil className="h-4 w-4" /> Edit</button>
-              <button className="inline-flex items-center gap-2 rounded-full bg-[#F5E400] px-4 py-2 text-sm font-semibold text-black"><Share2 className="h-4 w-4" /> Share</button>
+              <Link
+                to="/settings"
+                className="inline-flex items-center gap-2 rounded-full glass px-4 py-2 text-sm"
+              >
+                <Pencil className="h-4 w-4" /> Edit
+              </Link>
+              <button
+                type="button"
+                onClick={async () => {
+                  const text = `${profile?.fullName || "My profile"} on HustleBridge`;
+                  try {
+                    if (navigator.share) {
+                      await navigator.share({ title: "HustleBridge Profile", text });
+                    } else {
+                      await navigator.clipboard.writeText(text);
+                      alert("Profile link copied to clipboard.");
+                    }
+                  } catch {
+                    /* user cancelled share */
+                  }
+                }}
+                className="inline-flex items-center gap-2 rounded-full bg-[#F5E400] px-4 py-2 text-sm font-semibold text-black"
+              >
+                <Share2 className="h-4 w-4" /> Share
+              </button>
             </div>
           </div>
           <div className="mt-8 grid grid-cols-2 gap-4 md:grid-cols-4">

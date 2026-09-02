@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
-import { Github, Instagram, Linkedin, Mail, MapPin, Phone, Twitter } from "lucide-react";
+import { Mail, MapPin, Phone } from "lucide-react";
 import { NeonBackground } from "@/components/site/NeonBackground";
 import { SiteHeader } from "@/components/site/SiteHeader";
 import { SiteFooter } from "@/components/site/SiteFooter";
@@ -19,10 +19,11 @@ function CTA() {
         <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="font-display text-6xl font-bold leading-[1.05] sm:text-7xl lg:text-8xl">
           READY TO GROW <br /> YOUR <span className="text-[#FF0A78] text-glow-pink italic">HUSTLE?</span>
         </motion.h1>
-        <p className="mx-auto mt-6 max-w-2xl text-lg text-white/70">Join thousands of hustlers and businesses building the future together. Your next big opportunity is one click away.</p>
+        <p className="mx-auto mt-6 max-w-2xl text-lg text-white/70">Connect with clients, explore opportunities, and grow your freelance hustle on a student-focused marketplace.</p>
         <div className="mt-10 flex flex-wrap justify-center gap-4">
-          <Link to="/register" as="/register" className="rounded-full bg-[#F5E400] px-8 py-4 font-semibold text-black glow-yellow hover:scale-105 transition">Join as Hustler</Link>
-          <Link to="/register" as="/register" className="rounded-full bg-[#FF0A78] px-8 py-4 font-semibold text-white glow-pink hover:scale-105 transition">Hire Hustler Talent</Link>
+          <Link to="/register" search={{ role: "student" }} className="rounded-full bg-[#F5E400] px-8 py-4 font-semibold text-black glow-yellow hover:scale-105 transition">Join as Hustler</Link>
+          <Link to="/register" search={{ role: "client" }} className="rounded-full bg-[#FF0A78] px-8 py-4 font-semibold text-white glow-pink hover:scale-105 transition">Hire Talent</Link>
+          <Link to="/login" className="rounded-full border border-[#F5E400]/40 px-8 py-4 font-semibold text-[#F5E400] transition hover:bg-[#F5E400]/10">Try the Demo</Link>
         </div>
 
         <div className="mt-20 grid gap-4 md:grid-cols-3">
@@ -43,9 +44,9 @@ function CTA() {
         </div>
 
         <div className="mt-12 flex justify-center gap-4">
-          {[Instagram, Twitter, Linkedin, Github].map((Icon, i) => (
-            <a key={i} href="#" className="grid h-12 w-12 place-items-center rounded-full glass-strong text-white/70 transition hover:text-[#F5E400] hover:glow-yellow"><Icon className="h-5 w-5" /></a>
-          ))}
+          <Link to="/login" className="rounded-full glass-strong px-6 py-3 text-sm font-semibold text-white/70 transition hover:text-[#F5E400]">
+            Sign in for demo access
+          </Link>
         </div>
       </section>
       <SiteFooter />

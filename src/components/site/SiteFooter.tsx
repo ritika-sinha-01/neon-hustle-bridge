@@ -1,40 +1,87 @@
 import { Link } from "@tanstack/react-router";
 import { Logo } from "./Logo";
-import { Github, Instagram, Linkedin, Twitter } from "lucide-react";
+
+type FooterLink =
+  | { label: string; to: "/"; exact?: boolean }
+  | { label: string; to: "/opportunities" }
+  | { label: string; to: "/login" }
+  | { label: string; to: "/register"; role?: "student" | "client" }
+  | { label: string; to: "/cta" };
+
+const footerLinks: Record<string, FooterLink[]> = {
+  Platform: [
+    { to: "/", label: "Features", exact: true },
+    { to: "/opportunities", label: "Opportunities" },
+    { to: "/login", label: "Try the Demo" },
+    { to: "/register", label: "Get Started" },
+  ],
+  Company: [
+    { to: "/cta", label: "Contact" },
+    { to: "/register", label: "Join as Hustler", role: "student" },
+    { to: "/register", label: "Hire Talent", role: "client" },
+  ],
+  Legal: [
+    { to: "/cta", label: "Privacy" },
+    { to: "/cta", label: "Terms" },
+  ],
+  Support: [
+    { to: "/cta", label: "Help Center" },
+    { to: "/cta", label: "FAQ" },
+  ],
+};
+
+function FooterLinkItem({ link }: { link: FooterLink }) {
+  if (link.to === "/register") {
+    return (
+      <Link
+        to="/register"
+        search={{ role: link.role ?? "student" }}
+        className="text-sm text-white/60 hover:text-[#F5E400]"
+      >
+        {link.label}
+      </Link>
+    );
+  }
+
+  return (
+    <Link
+      to={link.to}
+      activeOptions={link.to === "/" ? { exact: true } : undefined}
+      className="text-sm text-white/60 hover:text-[#F5E400]"
+    >
+      {link.label}
+    </Link>
+  );
+}
 
 export function SiteFooter() {
-  const cols = [
-    { title: "Platform", links: ["Features", "How it works", "Opportunities", "Pricing"] },
-    { title: "Company", links: ["About", "Careers", "Blog", "Contact"] },
-    { title: "Legal", links: ["Privacy", "Terms", "Cookies"] },
-    { title: "Support", links: ["Help center", "FAQ", "Status"] },
-  ];
   return (
     <footer className="mt-32 border-t border-white/5">
       <div className="mx-auto grid max-w-7xl gap-12 px-6 py-16 lg:grid-cols-6">
         <div className="lg:col-span-2">
           <Logo />
-          <p className="mt-4 max-w-xs text-sm text-white/60">Bridging student talent with real-world opportunities. Hustle smarter.</p>
-          <div className="mt-6 flex gap-3">
-            {[Instagram, Twitter, Linkedin, Github].map((Icon, i) => (
-              <a key={i} href="#" className="grid h-10 w-10 place-items-center rounded-full glass text-white/70 transition hover:text-[#F5E400] hover:glow-yellow">
-                <Icon className="h-4 w-4" />
-              </a>
-            ))}
-          </div>
+          <p className="mt-4 max-w-xs text-sm text-white/60">
+            Bridging student talent with real-world opportunities. Hustle smarter.
+          </p>
         </div>
-        {cols.map((c) => (
-          <div key={c.title}>
-            <h4 className="mb-4 text-sm font-semibold uppercase tracking-wider text-white/90">{c.title}</h4>
+        {Object.entries(footerLinks).map(([title, links]) => (
+          <div key={title}>
+            <h4 className="mb-4 text-sm font-semibold uppercase tracking-wider text-white/90">
+              {title}
+            </h4>
             <ul className="space-y-2">
-              {c.links.map((l) => (
-                <li key={l}><Link to="/cta" className="text-sm text-white/60 hover:text-[#F5E400]">{l}</Link></li>
+              {links.map((l) => (
+                <li key={l.label}>
+                  <FooterLinkItem link={l} />
+                </li>
               ))}
             </ul>
           </div>
         ))}
       </div>
-      <div className="border-t border-white/5 py-6 text-center text-xs text-white/40">© 2026 HustleBridge. Built for the relentless.</div>
+      <div className="border-t border-white/5 py-6 text-center text-xs text-white/40">
+        © 2026 HustleBridge. Built for the relentless.
+      </div>
     </footer>
   );
 }
